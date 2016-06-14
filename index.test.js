@@ -56,6 +56,10 @@ describe('protobuf test', function() {
 
 var entry = { identities: [ { uri: 'uri' } ], data: null };
 
+var multiRefEntry = { identities: [ 
+  { uri: '0x1233333333333333333333333333333333333333333333333333333333333321' },
+  { uri: '0x1234444444444444444444444444444444444444444444444444444444444321' } ], data: null };
+
 describe('registrant sdk', function() {
 
   it('should allow to read asset and parse into object.', function(done) {
@@ -86,6 +90,21 @@ describe('registrant sdk', function() {
 
     registrant.createAsset(entry, '0x1234').then(function(rv) {
       expect(contract.create).calledWith(sinon.match.any, ['0x0a050a03757269'], sinon.match.any, sinon.match.any);
+      expect(rv).to.eql('0x4321');
+      done();
+    }).catch(done);
+  });
+
+  it('should allow to create asset with reference for each id.', function(done) {
+
+    var contract = { create: function() {} , schemas: { call: function() {} }};
+    sinon.stub(contract, 'create').yields(null, '0x4321');
+    sinon.stub(contract.schemas, 'call').yields(null, proto);
+
+    var registrant = new Registrant({ getRegistry: function() {return contract;}, getWeb3: function() {}, getAddress: function() {}});
+
+    registrant.createAsset(multiRefEntry).then(function(rv) {
+      expect(contract.create).calledWith(sinon.match.any, ["0x0a440a4230783132333333333333333333333333333333333333333333333333", "0x3333333333333333333333333333333333333333333333333333333333333333", "0x3333333332310a440a4230783132333434343434343434343434343434343434", "0x3434343434343434343434343434343434343434343434343434343434343434", "0x343434343434343434333231"], ['0x1233333333333333333333333333333333333333333333333333333333333321', '0x1234444444444444444444444444444444444444444444444444444444444321'], sinon.match.any);
       expect(rv).to.eql('0x4321');
       done();
     }).catch(done);
