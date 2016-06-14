@@ -1,0 +1,13 @@
+message Identities {
+  repeated Identity identities = 1;
+  optional Data data = 2;
+}
+
+message Identity {
+  required string uri = 1;
+}
+
+message Data {
+  optional string MymeType = 1;
+  optional string brandName = 2;
+}
