@@ -18,16 +18,15 @@ var rpcUrl = 'http://52.28.142.166:8555';
 var provider = new Provider(rpcUrl, secretSeed);
 
 //setting up sdk with provider and address of contract
-var registryAddress = '0x2f3b8814c136ea5640a5c1da75f666f1565ba4ae';
+var registryAddress = '0x445116d182627e5a68878daa21fbf61845c02ef9';
 
 var registrant = new RegistrantSdk(provider, registryAddress);
 
 //playing with the registry
-var thing = {
-    identities: [{
-        pubKey: '0x10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46',
-        schema: 'urn:ble'
-    }],
+var thing = { 
+    identities: [ {
+        pubKey: ByteBuffer.fromHex('10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46'),
+        schema: 'urn:test' } ],
     data: null
 };
 
@@ -37,6 +36,12 @@ registrant.createThing(thing).then(function(data) {
 
 registrant.getThing('0x10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46').then(function(data) {
     console.log(data);
+});
+
+//or
+
+registrant.getThing('0x10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46').then(function(data) {
+    console.log(data.identities[0].pubKey.toString('hex'));
 });
 ```
 
@@ -50,7 +55,7 @@ var Provider = require('./lib/provider.js');
 
 //setting up provider for reading
 var provider = new Provider('http://52.28.142.166:8555');
-var registryAddress = '0x2f3b8814c136ea5640a5c1da75f666f1565ba4ae';
+var registryAddress = '0x445116d182627e5a68878daa21fbf61845c02ef9';
 
 var consumer = new ConsumerSdk(provider, registryAddress);
 
@@ -75,7 +80,7 @@ var rpcUrl = 'http://52.28.142.166:8555';
 var provider = new Provider(rpcUrl, secretSeed);
 
 //setting up sdk with provider and address of contract
-var registrarAddress = '0x3811199c2e19592aa7df1ea96ad8cb9675343557';
+var registrarAddress = '0xa1764df8d613c2223f09af603f527dbb207fcc43';
 
 var certifier = new CertifierSdk(provider, registrarAddress);
 
