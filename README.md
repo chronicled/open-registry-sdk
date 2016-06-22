@@ -4,7 +4,7 @@ This lib can be used on node-backend with an unmanaged key (passed programatical
 
 ## Registrant Usage
 
-As a registrant, i can write new assets to the blockchain and read them back by reference.
+As a registrant, i can write new Things to the blockchain and read them back by identity.
 
 ```js
 //dependencies
@@ -23,25 +23,26 @@ var registryAddress = '0x2f3b8814c136ea5640a5c1da75f666f1565ba4ae';
 var registrant = new RegistrantSdk(provider, registryAddress);
 
 //playing with the registry
-var asset = {
+var thing = {
     identities: [{
-        uri: 'pubkey-ecc://10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46'
+        pubKey: '0x10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46',
+        schema: 'urn:ble'
     }],
     data: null
 };
 
-registrant.createAsset(asset, 'refX').then(function(data) {
+registrant.createThing(thing).then(function(data) {
     console.log(data);
 });
 
-registrant.getAsset('refX').then(function(data) {
+registrant.getThing('0x10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46').then(function(data) {
     console.log(data);
 });
 ```
 
 ## Consumer Usage
 
-As a consumer, i can can read assets from the blockchain and use the public key for verification.
+As a consumer, i can can read Things from the blockchain and use the public key for verification.
 ```js
 //dependencies
 var ConsumerSdk = require('./lib/consumer.js');
@@ -53,7 +54,7 @@ var registryAddress = '0x2f3b8814c136ea5640a5c1da75f666f1565ba4ae';
 
 var consumer = new ConsumerSdk(provider, registryAddress);
 
-consumer.getAsset('ref3').then(function(data) {
+consumer.getThing('0x10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46').then(function(data) {
     console.log(data);
 });
 ```
@@ -79,7 +80,7 @@ var registrarAddress = '0x3811199c2e19592aa7df1ea96ad8cb9675343557';
 var certifier = new CertifierSdk(provider, registrarAddress);
 
 //playing with the registry
-certifier.addRegistrant("0x7111b812c1f8c93abb2c795f8fd5a202264c1111").then(function(data) {
+certifier.addRegistrant('0x7111b812c1f8c93abb2c795f8fd5a202264c1111', 'some description').then(function(data) {
     console.log(data);
 });
 
@@ -91,21 +92,22 @@ certifier.listActiveRegistrants().then(function(data) {
 
 ## Storage Schema
 
-Due to the limitation, that public functions can not receive arrays of dynamicly-sized types, data in the storage of the contract has been sliced into `byte32` records. The content of the arrays is encoded tightly using the a protobuf schema. The schema is stored in the contract, and each Asset record contains a reference to a schema. A schema can look like this:
+Due to the limitation, that public functions can not receive arrays of dynamicly-sized types, data in the storage of the contract has been sliced into `byte32` records. The content of the arrays is encoded tightly using the a protobuf schema. The schema is stored in the contract, and each Thing record contains a reference to a schema. A schema can look like this:
 
 ```
-message Asset {    
-  repeated Identity identities = 1; 
-  optional Data data = 2;           
-}                                   
-                                    
-message Identity {                  
-  required string uri = 1;          
-}                                   
-                                    
-message Data {                      
-  optional string MymeType = 1;     
-  optional string brandName = 2;    
+message Thing {
+  repeated Identity identities = 1;
+  optional Data data = 2;
+}
+
+message Identity {
+  required bytes pubKey = 1;
+  optional string schema = 2;
+}
+
+message Data {
+  optional string MymeType = 1;
+  optional string brandName = 2;
 }
 ```
 

@@ -9,10 +9,13 @@
   "author": "Johann Barbie <johann@ambisafe.co> (http://ambisafe.co/)",
   "dependencies": {
     "async": "^1.5.2",
+    "bignumber.js": "^2.3.0",
+    "bytebuffer": "^5.0.1",
     "eth-lightwallet": "^2.3.2",
     "object-assign": "^4.1.0",
-    "web3-provider-engine": "^7.7.0",
-    "protobufjs": "^5.0.1"
+    "protobufjs": "^5.0.1",
+    "web3": "^0.17.0-alpha",
+    "web3-provider-engine": "^7.7.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
