@@ -1,0 +1,89 @@
+{
+    "package": "Registrant",
+    "messages": [
+        {
+            "name": "Registrant",
+            "fields": [
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "name",
+                    "id": 1
+                },
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "description",
+                    "id": 2
+                },
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "contact",
+                    "id": 3
+                },
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "website",
+                    "id": 4
+                },
+                {
+                    "rule": "required",
+                    "type": "string",
+                    "name": "legalName",
+                    "id": 5
+                },
+                {
+                    "rule": "required",
+                    "type": "Address",
+                    "name": "legalAddress",
+                    "id": 6
+                }
+            ],
+            "messages": [
+                {
+                    "name": "Address",
+                    "fields": [
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "street_1",
+                            "id": 1
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "street_2",
+                            "id": 2
+                        },
+                        {
+                            "rule": "repeated",
+                            "type": "string",
+                            "name": "city",
+                            "id": 3
+                        },
+                        {
+                            "rule": "required",
+                            "type": "string",
+                            "name": "state",
+                            "id": 4
+                        },
+                        {
+                            "rule": "optional",
+                            "type": "string",
+                            "name": "zip",
+                            "id": 5
+                        },
+                        {
+                            "rule": "repeated",
+                            "type": "string",
+                            "name": "country",
+                            "id": 6
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
