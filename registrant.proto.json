@@ -58,7 +58,7 @@
                             "id": 2
                         },
                         {
-                            "rule": "repeated",
+                            "rule": "required",
                             "type": "string",
                             "name": "city",
                             "id": 3
@@ -76,7 +76,7 @@
                             "id": 5
                         },
                         {
-                            "rule": "repeated",
+                            "rule": "required",
                             "type": "string",
                             "name": "country",
                             "id": 6
