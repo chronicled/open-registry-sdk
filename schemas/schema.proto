@@ -1,0 +1,5 @@
+message Schema {
+    required string name = 1;
+    required string description = 2;
+    required string definition = 3;
+}
