@@ -151,12 +151,12 @@ message Registrant {
 }
 
 message Address {
-    required street_1 = 1;
-    optional street_2 = 2;
-    required city = 3;
-    optional state = 4;
-    required zip = 5;
-    required country = 6;
+    required string street_1 = 1;
+    optional string street_2 = 2;
+    required string city = 3;
+    optional string state = 4;
+    required string zip = 5;
+    required string country = 6;
 }
 ```
 
