@@ -5,6 +5,7 @@ module.exports = {
     registrarAddress: "0x7c2eaa98583512ab15dc05f385830dc16b9ec5c0",
     //Testnet: http://52.28.142.166:8555
     //Livenet: http://node.ambisafe.co
-    urlProvider: "http://52.28.142.166:8555",
+    // urlProvider: "http://52.28.142.166:8555",
+    urlProvider: "http://localhost:8545",
     fromBlock: 1360000
 }
