@@ -1,7 +1,7 @@
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
-var tools = require('../lib/tools');
+var OrUtils = require('../open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
 var ConsumerSdk = require('../lib/consumer.js');
@@ -21,10 +21,7 @@ web3 = new Web3();
 var provider = null;
 
 var thingToAdd = {
-	identities: [ {
-		pubKey: ByteBuffer.fromHex('10238a3b4610238a3b3610238a3b3610238a3b4610238a3b46'),
-		schema: 'urn:test'
-	} ],
+	identities: ['pbk:ec:secp256r1:0360FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'],
 	data: {
 		name: 'Test thing',
 		description: 'Test description of the thing'
@@ -67,28 +64,33 @@ var waitBlocks = function(blocks, callback){
     }, 1000);
 }
 
+var contracts = {
+	registryAddress : config.registryAddress,
+	registryAbi : config.registryABI,
+	registrarAddress : config.registrarAddress,
+	registrarABI : config.registrarABI,
+}
+
 describe('Open Registry SDK', function() {
 
-	test('Start SDK', function(done) {
-		console.log('Starting sdk..');
+	test('Start registrant SDK', function(done) {
+		console.log('Starting registrant sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, function(){
-			sdk.consumer = new ConsumerSdk(provider, config.registryAddress, config.registrarAddress),
-			sdk.registrant = new RegistrantSdk(provider, config.registryAddress);
-			sdk.certifier = new CertifierSdk(provider, config.registryAddress,  config.registrarAddress);
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'registrant', function(newSdk){
+			sdk = newSdk;
 			done();
 		});
 	});
 
 	test('Add Thing', function(done) {
 		console.log('Adding thing', thingToAdd.data.name);
-		sdk.registrant.createThing(thingToAdd, 1).then(function(tx){
-            waitForTx(tx, function(txData){
+		sdk.createThing(thingToAdd.identities, thingToAdd.data, 1).then(function(tx){
+			waitForTx(tx, function(txData){
 				assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
-				assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
-                waitBlocks(1,done);
-            })
-        });
+				//assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
+        		done();
+    		})
+    	});
 	});
 
 });

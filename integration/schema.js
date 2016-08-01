@@ -1,7 +1,7 @@
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
-var tools = require('../lib/tools');
+var OrUtils = require('../open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
 var ConsumerSdk = require('../lib/consumer.js');
@@ -20,21 +20,9 @@ web3 = new Web3();
 
 var provider = null;
 
-var schemaToGet = 1;
-
 /*
 BASIC SCHEMA
 message Thing {
-  repeated Identity identities = 1;
-  optional Data data = 2;
-}
-
-message Identity {
-  optional bytes pubKey = 1;
-  required string schema = 2;
-}
-
-message Data {
   optional string name = 1;
   optional string description = 2;
 }
@@ -42,7 +30,7 @@ message Data {
 var schemaToAdd = {
 	name: 'Basic',
 	description: 'Schema with one or more identities and one name and description',
-	definition: 'message Thing { repeated Identity identities = 1; optional Data data = 2; } message Identity { optional bytes pubKey = 1; required string schema = 2; } message Data { optional string name = 1; optional string description = 2; }'
+	definition: 'message Thing { optional string name = 1; optional string description = 2; }'
 };
 
 var sdk = {
@@ -81,35 +69,31 @@ var waitBlocks = function(blocks, callback){
     }, 1000);
 }
 
+var contracts = {
+	registryAddress : config.registryAddress,
+	registryAbi : config.registryABI,
+	registrarAddress : config.registrarAddress,
+	registrarABI : config.registrarABI,
+}
+
 describe('Open Registry SDK', function() {
 
-	test('Start SDK', function(done) {
-		console.log('Starting sdk..');
+	test('Start certifier SDK', function(done) {
+		console.log('Starting certifier sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, function(){
-			sdk.consumer = new ConsumerSdk(provider, config.registryAddress, config.registrarAddress),
-			sdk.registrant = new RegistrantSdk(provider, config.registryAddress);
-			sdk.certifier = new CertifierSdk(provider, config.registryAddress,  config.registrarAddress);
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'certifier', function(newSdk){
+			sdk = newSdk;
 			done();
 		});
 	});
 
 	test('Create Schema', function(done) {
 		console.log('Creating Schema..');
-        sdk.certifier.createSchema(schemaToAdd).then(function(tx){
-            waitForTx(tx, function(txData){
-                waitBlocks(1,done);
-            })
-        });
-	});
-
-	test('Get Schema info', function(done) {
-		console.log('Getting Schema..');
-		sdk.consumer.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
-			assert.notEqual(error, 'null', error);
-			console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
-            done();
-        });
+	    sdk.createSchema(schemaToAdd).then(function(tx){
+			waitForTx(tx, function(txData){
+				done();
+			})
+	    });
 	});
 
 });

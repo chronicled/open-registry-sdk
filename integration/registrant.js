@@ -1,7 +1,7 @@
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
-var tools = require('../lib/tools');
+var OrUtils = require('../open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
 var ConsumerSdk = require('../lib/consumer.js');
@@ -38,11 +38,7 @@ var registrantToAdd = {
 	}
 }
 
-var sdk = {
-	certifier: null,
-	registrant: null,
-	consumer: null
-};
+var sdk = null;
 
 var waitForTx = function(txHash, callback){
     console.log('Waiting for TX', txHash, 'to be mined.');
@@ -74,53 +70,43 @@ var waitBlocks = function(blocks, callback){
     }, 1000);
 }
 
+var contracts = {
+	registryAddress : config.registryAddress,
+	registryABI : config.registryABI,
+	registrarAddress : config.registrarAddress,
+	registrarABI : config.registrarABI,
+}
+
 describe('Open Registry SDK', function() {
 
-	test('Start SDK', function(done) {
-		console.log('Starting sdk..');
+	test('Start certifier SDK', function(done) {
+		console.log('Starting certifier sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, function(){
-			sdk.consumer = new ConsumerSdk(provider, config.registryAddress, config.registrarAddress),
-			sdk.registrant = new RegistrantSdk(provider, config.registryAddress);
-			sdk.certifier = new CertifierSdk(provider, config.registryAddress,  config.registrarAddress);
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'certifier', function(newSdk){
+			sdk = newSdk;
 			done();
 		});
 	});
 
 	test('Add Registrant', function(done) {
 		console.log('Adding registrant',registrantToAddAddress);
-		sdk.certifier.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
-            waitForTx(tx, function(txData){
+		sdk.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
+    		waitForTx(tx, function(txData){
 				assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address already registered or not CA permission.');
-                waitBlocks(1,done);
-            })
-        });
-	});
-
-	test('Get new registrant info', function(done) {
-		console.log('Getting info of registrant',registrantToAddAddress);
-		sdk.consumer.getRegistrant(registrantToAddAddress).then(function(data){
-			console.log('Registrant data', sdk.consumer.decodeRegistrant(data[1]));
-            done();
-        });
+        		waitBlocks(1,done);
+			})
+    	});
 	});
 
 	test('Edit Registrant', function(done) {
 		console.log('Editing registrant',registrantToAddAddress);
-		sdk.certifier.editRegistrant(registrantToAddAddress, registrantToAdd, true).then(function(tx){
-            waitForTx(tx, function(txData){
+		registrantToAdd.name = 'Test registrant edited';
+		sdk.editRegistrant(registrantToAddAddress, registrantToAdd, true).then(function(tx){
+	    	waitForTx(tx, function(txData){
 				assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address not registered or not CA permission.');
-                waitBlocks(1,done);
-            })
-        });
-	});
-
-	test('Get edited registrant info', function(done) {
-		console.log('Getting edited info of registrant',registrantToAddAddress);
-		sdk.consumer.getRegistrant(registrantToAddAddress).then(function(data){
-			console.log('Registrant data', sdk.consumer.decodeRegistrant(data[1]));
-            done();
-        });
+	        	done();
+    		})
+    	});
 	});
 
 });

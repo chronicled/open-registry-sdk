@@ -1,7 +1,7 @@
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
-var tools = require('../lib/tools');
+var OrUtils = require('../open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
 var ConsumerSdk = require('../lib/consumer.js');
@@ -41,16 +41,6 @@ var registrantToAdd = {
 /*
 BASIC SCHEMA
 message Thing {
-  repeated Identity identities = 1;
-  optional Data data = 2;
-}
-
-message Identity {
-  optional bytes pubKey = 1;
-  required string schema = 2;
-}
-
-message Data {
   optional string name = 1;
   optional string description = 2;
 }
@@ -58,7 +48,7 @@ message Data {
 var schemaToAdd = {
 	name: 'Basic',
 	description: 'Schema with one or more identities and one name and description',
-	definition: 'message Thing { repeated Identity identities = 1; optional Data data = 2; } message Identity { optional bytes pubKey = 1; required string schema = 2; } message Data { optional string name = 1; optional string description = 2; }'
+	definition: 'message Thing { optional string name = 1; optional string description = 2; }'
 };
 
 var thingToAdd = {
@@ -72,11 +62,9 @@ var thingToAdd = {
 	}
 };
 
-var sdk = {
-	certifier: null,
-	registrant: null,
-	consumer: null
-};
+var consumerSdk = null;
+var registrantSdk = null;
+var certifierSdk = null;
 
 var waitForTx = function(txHash, callback){
     console.log('Waiting for TX', txHash, 'to be mined.');
@@ -108,22 +96,45 @@ var waitBlocks = function(blocks, callback){
     }, 1000);
 }
 
+var contracts = {
+	registryAddress : config.registryAddress,
+	registryAbi : config.registryABI,
+	registrarAddress : config.registrarAddress,
+	registrarABI : config.registrarABI,
+}
+
 describe('Open Registry SDK', function() {
 
-	test('Start SDK', function(done) {
+	test('Start consumer SDK', function(done) {
+		console.log('Starting consumer sdk..');
+		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'consumer', function(newSdk){
+			consumerSdk = newSdk;
+			done();
+		});
+	});
+
+	test('Start registrant SDK', function(done) {
+		console.log('Startingregistrant sdk..');
+		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'registrant', function(newSdk){
+			registrantSdk = newSdk;
+			done();
+		});
+	});
+
+	test('Start certifier SDK', function(done) {
 		console.log('Starting sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, function(){
-			sdk.consumer = new ConsumerSdk(provider, config.registryAddress, config.registrarAddress),
-			sdk.registrant = new RegistrantSdk(provider, config.registryAddress);
-			sdk.certifier = new CertifierSdk(provider, config.registryAddress,  config.registrarAddress);
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'certifier', function(newSdk){
+			certifierSdk = newSdk;
 			done();
 		});
 	});
 
 	test('Configure Registrar', function(done) {
 		console.log('Configuring registrar address..');
-		sdk.certifier.setRegistrar(config.registrarAddress).then(function(tx){
+		certifierSdk.setRegistrar(config.registrarAddress).then(function(tx){
 			waitForTx(tx, function(txData){
 				if (txData.logs.length > 0){
 					assert.notEqual(parseInt(txData.logs[0].data.substring(65,66)),3, 'Already configured');
@@ -133,9 +144,17 @@ describe('Open Registry SDK', function() {
 		});
 	});
 
+	test('Get registrar address from registry Registrar', function(done) {
+		console.log('Getting registrar address..');
+		consumerSdk.getRegistrarAddressOnRegistry().then(function(address){
+			console.log('Registrar address:', address);
+            done();
+		});
+	});
+
 	test('Create Schema', function(done) {
 		console.log('Creating Schema..');
-        sdk.certifier.createSchema(schemaToAdd).then(function(tx){
+        certifierSdk.createSchema(schemaToAdd).then(function(tx){
             waitForTx(tx, function(txData){
                 waitBlocks(1,done);
             })
@@ -144,7 +163,7 @@ describe('Open Registry SDK', function() {
 
 	test('Get Schema info', function(done) {
 		console.log('Getting Schema..');
-		sdk.consumer.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
+		consumerSdk.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
 			assert.notEqual(error, 'null', error);
 			console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
             done();
@@ -153,59 +172,60 @@ describe('Open Registry SDK', function() {
 
 	test('Add Registrant', function(done) {
 		console.log('Adding registrant',registrantToAddAddress);
-		sdk.certifier.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
-            waitForTx(tx, function(txData){
+		certifierSdk.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
+    		waitForTx(tx, function(txData){
 				assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address already registered or not CA permission.');
-                waitBlocks(1,done);
-            })
-        });
-	});
-
-	test('Get new registrant info', function(done) {
-		console.log('Getting info of registrant',registrantToAddAddress);
-		sdk.consumer.getRegistrant(registrantToAddAddress).then(function(data){
-			console.log('Registrant data', sdk.consumer.decodeRegistrant(data[1]));
-            done();
-        });
+        		waitBlocks(1,done);
+			})
+    	});
 	});
 
 	test('Edit Registrant', function(done) {
 		console.log('Editing registrant',registrantToAddAddress);
-		sdk.certifier.editRegistrant(registrantToAddAddress, registrantToAdd, true).then(function(tx){
-            waitForTx(tx, function(txData){
+		registrantToAdd.name = 'Test registrant edited';
+		certifierSdk.editRegistrant(registrantToAddAddress, registrantToAdd, true).then(function(tx){
+	    	waitForTx(tx, function(txData){
 				assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address not registered or not CA permission.');
-                waitBlocks(1,done);
-            })
-        });
-	});
-
-	test('Get edited registrant info', function(done) {
-		console.log('Getting edited info of registrant',registrantToAddAddress);
-		sdk.consumer.getRegistrant(registrantToAddAddress).then(function(data){
-			console.log('Registrant data', sdk.consumer.decodeRegistrant(data[1]));
-            done();
-        });
+	        	waitBlocks(1,done);
+    		})
+    	});
 	});
 
 	test('Add Thing', function(done) {
 		console.log('Adding thing', thingToAdd.data.name);
-		sdk.registrant.createThing(thingToAdd, 1).then(function(tx){
-            waitForTx(tx, function(txData){
+		registrantSdk.createThing(thingToAdd.identities, thingToAdd.data, 1).then(function(tx){
+			waitForTx(tx, function(txData){
 				assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
-				assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
-                waitBlocks(1,done);
-            })
-        });
+				//assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
+				waitBlocks(1,done);
+			})
+		});
 	});
 
 	test('Get Things', function(done) {
 		console.log('Get Things..');
-		sdk.consumer.getThings(true, config.fromBlock, function(things){
+        consumerSdk.getThings(true, config.fromBlock, function(things){
             console.log(things.length, 'Things registered');
             if (things.length > 0){
-                console.log('Getting Thing', things[0].args.identity);
-                sdk.consumer.getThing(things[0].args.identity).then(function(thing){
-                    console.log('Thing', things[0].args.identity, 'data:',thing);
+                console.log('Getting Thing', things[0].args.ids);
+                consumerSdk.getThing(things[0].args.ids).then(function(thing){
+                    console.log('Thing', things[0].args.ids, 'data:',thing);
+                    done();
+                });
+            } else {
+                done();
+            }
+        });
+    });
+
+    test('Get Registrants', function(done) {
+		console.log('Get Registrants..');
+		consumerSdk.getRegistrants(false, config.fromBlock, function(registrants){
+            console.log(registrants.length, 'Registrants registered');
+            if (registrants.length > 0){
+                console.log('Getting Registrant', registrants[0].args.registrant);
+                consumerSdk.getRegistrant(registrants[0].args.registrant).then(function(registrant){
+                    console.log('Registrant', registrants[0].args.registrant, 'data:',registrant[1]);
                     done();
                 });
             } else {
@@ -214,19 +234,12 @@ describe('Open Registry SDK', function() {
         });
 	});
 
-    test('Get Registrants', function(done) {
-		console.log('Get Registrants..');
-		sdk.consumer.getRegistrants(false, config.fromBlock, function(registrants){
-            console.log(registrants.length, 'Registrants registered');
-            if (registrants.length > 0){
-                console.log('Getting Registrant', registrants[0].args.registrant);
-                sdk.consumer.getRegistrant(registrants[0].args.registrant).then(function(registrant){
-                    console.log('Registrant', registrants[0].args.registrant, 'data:',sdk.consumer.decodeRegistrant(registrant[1]));
-                    done();
-                });
-            } else {
-                done();
-            }
+	test('Get Schema info', function(done) {
+		console.log('Getting Schema..');
+		consumerSdk.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
+			assert.notEqual(error, 'null', error);
+			console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
+            done();
         });
 	});
 

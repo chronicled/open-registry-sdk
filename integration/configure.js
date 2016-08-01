@@ -1,7 +1,7 @@
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
-var tools = require('../lib/tools');
+var OrUtils = require('../open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
 var ConsumerSdk = require('../lib/consumer.js');
@@ -20,11 +20,7 @@ web3 = new Web3();
 
 var provider = null;
 
-var sdk = {
-	certifier: null,
-	registrant: null,
-	consumer: null
-};
+var sdk = null;
 
 var waitForTx = function(txHash, callback){
     console.log('Waiting for TX', txHash, 'to be mined.');
@@ -56,28 +52,50 @@ var waitBlocks = function(blocks, callback){
     }, 1000);
 }
 
+var contracts = {
+  registryAddress : config.registryAddress,
+  registryAbi : config.registryABI,
+  registrarAddress : config.registrarAddress,
+  registrarABI : config.registrarABI,
+}
+
 describe('Open Registry SDK', function() {
 
-	test('Start SDK', function(done) {
-		console.log('Starting sdk..');
+    test('Start certifier SDK', function(done) {
+		console.log('Starting certifier sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, function(){
-			sdk.consumer = new ConsumerSdk(provider, config.registryAddress, config.registrarAddress),
-			sdk.registrant = new RegistrantSdk(provider, config.registryAddress);
-			sdk.certifier = new CertifierSdk(provider, config.registryAddress,  config.registrarAddress);
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'certifier', function(newSdk){
+			sdk = newSdk;
 			done();
 		});
 	});
 
 	test('Configure Registrar', function(done) {
 		console.log('Configuring registrar address..');
-		sdk.certifier.setRegistrar(config.registrarAddress).then(function(tx){
+		sdk.setRegistrar(config.registrarAddress).then(function(tx){
 			waitForTx(tx, function(txData){
 				if (txData.logs.length > 0){
 					assert.notEqual(parseInt(txData.logs[0].data.substring(65,66)),3, 'Already configured');
 				}
 				waitBlocks(1,done);
 			})
+		});
+	});
+
+    test('Start consumer SDK', function(done) {
+		console.log('Starting consumer sdk..');
+		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
+		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'consumer', function(newSdk){
+			sdk = newSdk;
+			done();
+		});
+	});
+
+    test('Get registrar address from registry Registrar', function(done) {
+		console.log('Configuring registrar address..');
+		sdk.getRegistrarAddressOnRegistry().then(function(address){
+			console.log('Registrar address:', address);
+            done()
 		});
 	});
 

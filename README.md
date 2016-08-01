@@ -184,6 +184,10 @@ message Address {
 
 5. get javascript object
 
+## Integration testing
+
+To run a full integration test first configure the config file on integration/config.js. After doing it you can run a complete inetgration test with `npm run integration`, to tests specific methods another scripts like `npm run integration-configure` `npm run integration-schema` `npm run integration-registrant` `npm run integration-thing` `npm run integration-consumer` are available.
+
 ### Node Modules Fixes
 
 * On node_modules/eth-lightwallet/lib/tx-utils.js add the sliceString function above createdContractAddress
