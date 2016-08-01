@@ -21,15 +21,19 @@ web3 = new Web3();
 var provider = null;
 
 var thingToAdd = {
-	identities: [ {
-		pubKey: ByteBuffer.fromHex('10238a3b4610238a3b3610238a3b3610238a3b4610238a3b46'),
-		schema: 'urn:test'
-	} ],
+	identities: ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29fb6", "ble:1.0:aabbccddeeff"],
 	data: {
-		name: 'Test thing',
-		description: 'Test description of the thing'
+		service_url: 'http://test.com/1.json',
 	}
 };
+
+
+var severalIds = ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f03", "ble:1.0:aabbccddee01", "pbk:ec:secp256r1:0222fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29fb6"]
+var things = [
+	{identities: severalIds.slice(0, 2), data: {service_url: 'abc.com'}},
+	{identities: severalIds.slice(-1), data: {service_url: 'http://chronicled.com/'}},
+];
+
 
 var sdk = {
 	certifier: null,
@@ -83,6 +87,17 @@ describe('Open Registry SDK', function() {
 	test('Add Thing', function(done) {
 		console.log('Adding thing', thingToAdd.data.name);
 		sdk.registrant.createThing(thingToAdd, 1).then(function(tx){
+            waitForTx(tx, function(txData){
+				assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
+				assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
+                waitBlocks(1,done);
+            })
+        });
+	});
+
+	test('Add Things', function(done) {
+		console.log('Adding things', thingToAdd.data.name);
+		sdk.registrant.createThing(things, 1).then(function(tx){
             waitForTx(tx, function(txData){
 				assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
 				assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
