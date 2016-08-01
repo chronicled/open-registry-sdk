@@ -99,8 +99,8 @@ describe('Open Registry SDK', function() {
 		console.log('Adding things', thingToAdd.data.name);
 		sdk.registrant.createThing(things, 1).then(function(tx){
             waitForTx(tx, function(txData){
-				assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
-				assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
+							assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
+							assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
                 waitBlocks(1,done);
             })
         });
