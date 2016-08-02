@@ -1,17 +1,12 @@
 var expect = require('chai').expect;
 var Registrant = require('./lib/registrant');
+var Certifier = require('./lib/certifier');
+var Consumer = require('./lib/consumer');
 var ProtoBuf = require("protobufjs");
 var sinon = require('sinon');
 var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
-
-
-
-
-
-
-
-
+var proto = require('./schemas/schema.proto.json');
 
 
 
@@ -34,9 +29,9 @@ describe('Registrant SDK', function() {
       true
     ]);
 
-    var registrant = new Registrant({ getRegistry: function() {return contract;}, getWeb3: function() {}, getAddress: function() {}});
+    var consumer = new Consumer({ getRegistry: function() {return contract;}, getWeb3: function() {}, getAddress: function() {}});
 
-    registrant.getThing('0xaabb').then(function(rv) {
+    consumer.getThing('0xaabb').then(function(rv) {
       expect(rv.identities[0].pubKey.toString('hex')).to.eql('aabb');
       done();
     }).catch(done);
@@ -44,7 +39,7 @@ describe('Registrant SDK', function() {
 
   it('should allow to create Thing that is correctly serialized.', function(done) {
 
-    var contract = { create: function() {} , schemas: { call: function() {} }};
+    var contract = { createThing: function() {} , schemas: { call: function() {} }};
     sinon.stub(contract, 'createThing').yields(null, '0x4321');
     sinon.stub(contract.schemas, 'call').yields(null, proto);
 
@@ -59,7 +54,7 @@ describe('Registrant SDK', function() {
 
   it('should allow to create Thing with reference for each id.', function(done) {
 
-    var contract = { create: function() {} , schemas: { call: function() {} }};
+    var contract = { createThing: function() {} , schemas: { call: function() {} }};
     sinon.stub(contract, 'createThing').yields(null, '0x4321');
     sinon.stub(contract.schemas, 'call').yields(null, proto);
 
@@ -81,7 +76,7 @@ describe('Registrant SDK', function() {
       reference: '0x3456'
     }]
 
-    var contract = { createMany: function() {} , schemas: { call: function() {} }};
+    var contract = { createThings: function() {} , schemas: { call: function() {} }};
     sinon.stub(contract, 'createThings').yields(null, [0, 1]);
     sinon.stub(contract.schemas, 'call').yields(null, proto);
 
