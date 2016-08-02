@@ -23,14 +23,14 @@ var registryAddress = '0x445116d182627e5a68878daa21fbf61845c02ef9';
 var registrant = new RegistrantSdk(provider, registryAddress);
 
 //playing with the registry
-var thing = { 
+var thing = {
     identities: [ {
         pubKey: ByteBuffer.fromHex('10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46'),
         schema: 'urn:test' } ],
     data: null
 };
 
-registrant.createThing(thing).then(function(data) {
+registrant.createThing(thing, 1).then(function(data) {
     console.log(data);
 });
 
@@ -62,6 +62,11 @@ var consumer = new ConsumerSdk(provider, registryAddress);
 consumer.getThing('0x10238a3b4610238a3b4610238a3b4610238a3b4610238a3b46').then(function(data) {
     console.log(data);
 });
+
+consumer.getRegistrant('0x7111b812c1f8c93abb2c795f8fd5a202264c1111').then(function(data) {
+    console.log(data);
+});
+
 ```
 
 ## Certifier Usage
@@ -84,15 +89,32 @@ var registrarAddress = '0xa1764df8d613c2223f09af603f527dbb207fcc43';
 
 var certifier = new CertifierSdk(provider, registrarAddress);
 
-//playing with the registry
-certifier.addRegistrant('0x7111b812c1f8c93abb2c795f8fd5a202264c1111', 'some description').then(function(data) {
+var regData = {
+    name: "required value here",
+    description: "required value here",
+    contact: "required value here",
+    website: "required value here",
+    legalName: "required value here",
+    address: {
+        street_1: "required value here",
+        street_2: "optional value here",
+        city: "required value here",
+        state: "optional value here",
+        zip: "required value here",
+        country: "required value here"
+    }
+}
+
+//Add a registrant
+certifier.addRegistrant('0x7111b812c1f8c93abb2c795f8fd5a202264c1111', registrantObject).then(function(data) {
     console.log(data);
 });
 
-certifier.listActiveRegistrants().then(function(data) {
+//Add a schema
+var schemaData = "Schema name" + ";#;" + "Schema description" + ";#;" + "Schema definition";
+certifier.addChema(schemaData).then(function(data) {
     console.log(data);
 });
-
 ```
 
 ## Storage Schema
@@ -111,8 +133,30 @@ message Identity {
 }
 
 message Data {
-  optional string MymeType = 1;
-  optional string brandName = 2;
+  optional string name = 1;
+  optional string description = 2;
+}
+```
+
+### Registrant schema
+
+```
+message Registrant {
+    required string name = 1;
+    required string description = 2;
+    required string contact = 3;
+    required string website = 4;
+    required string legalName = 5;
+    required Address legalAddress = 6;
+}
+
+message Address {
+    required string street_1 = 1;
+    optional string street_2 = 2;
+    required string city = 3;
+    optional string state = 4;
+    required string zip = 5;
+    required string country = 6;
 }
 ```
 
@@ -139,3 +183,4 @@ message Data {
 4. parse array using protobuf and validate with schema
 
 5. get javascript object
+

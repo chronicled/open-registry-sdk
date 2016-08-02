@@ -1,62 +1,9 @@
 var expect = require('chai').expect;
 var Registrant = require('./lib/registrant');
-var tools = require('./lib/tools');
 var ProtoBuf = require("protobufjs");
 var sinon = require('sinon');
 var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
-
-
-var slice1 = '0x1234000000000000000000000000000000000000000000000000000000004321';
-var slice2 = '0x5678000000000000000000000000000000000000000000000000000000004321';
-var total = '0x12340000000000000000000000000000000000000000000000000000000043215678000000000000000000000000000000000000000000000000000000004321';
-
-var proto = "message Thing {    \
-  repeated Identity identities = 1; \
-  optional Data data = 2;           \
-}                                   \
-                                    \
-message Identity {                  \
-  required bytes pubKey = 1;        \
-  optional string schema = 2;       \
-}                                   \
-message Data {                      \
-  optional string MymeType = 1;     \
-  optional string brandName = 2;    \
-}";
-var builder = ProtoBuf.loadJson(ProtoBuf.DotProto.Parser.parse(proto));
-var Thing = builder.build("Thing");
-
-describe('protobuf test', function() {
-
-  it('should allow to serialize and deserialize Things.', function(done) {
-
-    var ids = new Thing({ 
-      identities: [ { 
-        pubKey: ByteBuffer.fromHex('aabb'),
-        schema: 'urn:test'
-      } ],
-      data: null
-    });
-    expect(ids.encodeHex()).to.eql('0a0e0a02aabb120875726e3a74657374');
-    done();
-  });
-
-  it('should allow to split protobuf into 32byte parts.', function(done) {
-    var registrant = new Registrant();
-    var slices = tools.slice(total);
-    expect(slices[0]).to.eql(slice1);
-    expect(slices[1]).to.eql(slice2);
-    done();
-  });
-
-  it('should allow to concatenate parts back together', function(done) {
-    var registrant = new Registrant();
-    var merged = tools.merge([slice1, slice2]);
-    expect(merged).to.eql(total);
-    done();
-  });
-});
 
 var entry = { identities: [ { pubKey: ByteBuffer.fromHex('aabb'), schema: 'urn:test' } ], data: null };
 

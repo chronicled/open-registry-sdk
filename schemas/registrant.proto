@@ -1,0 +1,17 @@
+message Registrant {
+    required string name = 1;
+    required string description = 2;
+    required string contact = 3;
+    required string website = 4;
+    required string legalName = 5;
+    required Address legalAddress = 6;
+}
+
+message Address {
+    required string street_1 = 1;
+    optional string street_2 = 2;
+    required string city = 3;
+    optional string state = 4;
+    required string zip = 5;
+    required string country = 6;
+}
