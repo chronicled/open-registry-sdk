@@ -1,24 +1,26 @@
 {
   "name": "open-registry-sdk",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "lib/provider.js",
   "scripts": {
-    "test": "mocha test/index.js -u tdd --timeout 0",
-    "test-configure": "mocha test/configure.js -u tdd --timeout 0 --reporter spec",
-    "test-schema": "mocha test/schema.js -u tdd --timeout 0 --reporter spec",
-    "test-registrant": "mocha test/registrant.js -u tdd --timeout 0 --reporter spec",
-    "test-thing": "mocha test/thing.js -u tdd --timeout 0 --reporter spec",
-    "test-consumer": "mocha test/consumer.js -u tdd --timeout 0 --reporter spec"
+    "test": "mocha integration/index.js -u tdd --timeout 0",
+    "test-configure": "mocha integration/configure.js -u tdd --timeout 0 --reporter spec",
+    "test-schema": "mocha integration/schema.js -u tdd --timeout 0 --reporter spec",
+    "test-registrant": "mocha integration/registrant.js -u tdd --timeout 0 --reporter spec",
+    "test-thing": "mocha integration/thing.js -u tdd --timeout 0 --reporter spec",
+    "test-consumer": "mocha integration/consumer.js -u tdd --timeout 0 --reporter spec"
   },
   "author": "Johann Barbie <johann@ambisafe.co> (http://ambisafe.co/)",
   "dependencies": {
     "async": "^1.5.2",
+    "bigi": "^1.4.2",
     "bignumber.js": "^2.3.0",
     "bitcore-lib": "0.13.16",
     "bytebuffer": "^5.0.1",
     "es6-promise": "^3.1.2",
     "eth-lightwallet": "^2.4.3",
+    "json-parser": "^1.1.5",
     "object-assign": "^4.1.0",
     "protobufjs": "^5.0.1",
     "web3": "^0.17.0-alpha",
