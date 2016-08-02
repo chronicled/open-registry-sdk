@@ -1,12 +1,12 @@
 {
-  "name": "backend-sdk",
-  "version": "1.0.0",
+  "name": "open-registry-sdk",
+  "version": "0.0.4",
   "description": "",
   "main": "lib/authenticator.js",
   "scripts": {
     "test": "mocha index.test.js"
   },
-  "author": "Johann Barbie <johann@ambisafe.co> (http://ambisafe.co/)",
+  "author": "Ambisafe Inc. (http://ambisafe.co/)",
   "dependencies": {
     "async": "^1.5.2",
     "bignumber.js": "^2.3.0",
