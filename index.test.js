@@ -7,32 +7,45 @@ var sinon = require('sinon');
 var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
 var proto = require('./schemas/schema.proto.json');
+var Provider = require('./lib/provider');
+var provider = new Provider();
 
 
 
+var thingToAdd = {
+  identities: [ {
+    pubKey: ByteBuffer.fromHex('10238a3b4610238a3b3610238a3b3610238a3b4610238a3b46'),
+    schema: 'urn:test'
+  } ],
+  data: {
+    service_url: 'http://www.cosign.io'
+  }
+};
 
 
-var entry = { identities: [ { pubKey: ByteBuffer.fromHex('aabb'), schema: 'urn:test' } ], data: null };
-
-var multiRefEntry = { identities: [ 
-  { pubKey: ByteBuffer.fromHex('1233333333333333333333333333333333333333333333333333333333333321'), schema: 'urn:test' },
-  { pubKey: ByteBuffer.fromHex('1234444444444444444444444444444444444444444444444444444444444321'), schema: 'urn:test' } ], data: null };
+var thingResponse = [ [ '0x076e66633a312e30102300000000000000000000000000000000000000000000' ],
+  [ '0x0a14687474703a2f2f7777772e636f7369676e2e696f00000000000000000000' ],
+  '0x0000000000000000000000000000000000000000000000000000000000000001',
+  'message Thing {required string service_url = 1;}',
+  '0x202c31ca637d459bcd51a7bf77cc2c5a1c8489d1',
+  true ];
 
 describe('Registrant SDK', function() {
 
+   afterEach(function () {
+      provider.getRegistry.restore();
+   });
+
   it('should allow to read Thing and parse into object.', function(done) {
 
-    var contract = { getThing: { call: function() {} } };
-    sinon.stub(contract.getThing, 'call').yields(null, [
-      proto,
-      ['0x0a0e0a02aabb120875726e3a7465737400000000000000000000000000000000'],
-      true
-    ]);
+    var contract = { 
+      getThing: { call: function() {} } 
+    };
+    sinon.stub(contract.getThing, 'call').yields(null, thingResponse);
+    sinon.stub(provider, 'getRegistry').returns(contract);
 
-    var consumer = new Consumer({ getRegistry: function() {return contract;}, getWeb3: function() {}, getAddress: function() {}});
-
-    consumer.getThing('0xaabb').then(function(rv) {
-      expect(rv.identities[0].pubKey.toString('hex')).to.eql('aabb');
+    new Registrant(provider).getThing(['urn:test:1023']).then(function(rv) {
+      expect(rv.service_url).to.eql('http://www.cosign.io');
       done();
     }).catch(done);
   });
@@ -41,12 +54,12 @@ describe('Registrant SDK', function() {
 
     var contract = { createThing: function() {} , schemas: { call: function() {} }};
     sinon.stub(contract, 'createThing').yields(null, '0x4321');
-    sinon.stub(contract.schemas, 'call').yields(null, proto);
+    sinon.stub(contract.schemas, 'call').yields(null, '0a0562617369631204646573631a306d657373616765205468696e67207b726571756972656420737472696e6720736572766963655f75726c203d20313b7d');
+    sinon.stub(provider, 'getRegistry').returns(contract);
 
-    var registrant = new Registrant({ getRegistry: function() {return contract;}, getWeb3: function() {}, getAddress: function() {}});
-
-    registrant.createThing(entry.identities, entry.data).then(function(rv) {
-      expect(contract.create).calledWith(sinon.match.any, ['0x0a0e0a02aabb120875726e3a74657374'], sinon.match.any, sinon.match.any);
+    new Registrant(provider).createThing(['urn:test:1023'], thingToAdd.data).then(function(rv) {
+      console.log(rv);
+      expect(contract.createThing).calledWith([ '0x0875726e3a746573740002102300000000000000000000000000000000000000' ], [ '0x0a14687474703a2f2f7777772e636f7369676e2e696f' ], sinon.match.any, sinon.match.any);
       expect(rv).to.eql('0x4321');
       done();
     }).catch(done);
@@ -56,7 +69,8 @@ describe('Registrant SDK', function() {
 
     var contract = { createThing: function() {} , schemas: { call: function() {} }};
     sinon.stub(contract, 'createThing').yields(null, '0x4321');
-    sinon.stub(contract.schemas, 'call').yields(null, proto);
+    console.log(thingResponse[4]);
+    sinon.stub(contract.schemas, 'call').yields(null, thingResponse[4]);
 
     var registrant = new Registrant({ getRegistry: function() {return contract;}, getWeb3: function() {}, getAddress: function() {}});
 
