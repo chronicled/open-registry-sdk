@@ -34,3 +34,6 @@ build/Release
 server_modules
 
 environments
+
+node_modules
+playground
