@@ -1,12 +1,15 @@
+// To run tests successfully:
+// 1) Run  testrpc --account="0xf779e7e7fdb6d022781994a02450ef818b08567e1161946cc57f0207a9c1b5bf,9999999999999999999999999" --gasLimit=4000000 -b=1
+// 2) Have your contracts deployed, you can do that with "truffle deploy"    in open-registry-ethereum
+// 3) Update addresses of contracts if necessary in integration/config.js file
+// 4) npm test
+
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
 var OrUtils = require('../../open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
-var ConsumerSdk = require('../lib/consumer.js');
-var RegistrantSdk = require('../lib/registrant.js');
-var CertifierSdk = require('../lib/certifier.js');
 var Provider = require('../lib/provider.js');
 
 builder = ProtoBuf.loadJson(require('../schemas/schema.proto.json'));
@@ -38,21 +41,13 @@ var registrantToAdd = {
 	}
 }
 
-var singleId = 'hello:12345678';
-var severalIds = ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29fb6", "ble:1.0:aabbccddeeff", "pbk:ec:secp256r1:0222fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29fb6"]
+var severalIds = ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f01", "ble:1.0:aabbccddee02", "pbk:ec:secp256r1:0222fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f03"]
 
 var things = [
   {identities: severalIds.slice(0, 2), data: {name: 'abc.com', description: 'Testing'}},
   {identities: severalIds.slice(-1), data: {name: 'http://chronicled.com/', description: 'Testing again'}},
 ];
 
-/*
-BASIC SCHEMA
-message Thing {
-  optional string name = 1;
-  optional string description = 2;
-}
-*/
 var schemaToAdd = {
 	name: 'Basic',
 	description: 'Schema with one or more identities and one name and description',
@@ -60,16 +55,14 @@ var schemaToAdd = {
 };
 
 var thingToAdd = {
-  identities: ['pbk:ec:secp256r1:0360FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6'],
+  identities: ['pbk:ec:secp256r1:0360fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f04'],
   data: {
     name: 'Test thing',
     description: 'Test description of the thing'
   }
 };
 
-var consumerSdk = null;
-var registrantSdk = null;
-var certifierSdk = null;
+var sdk = null;
 
 var waitForTx = function(txHash, callback){
     console.log('Waiting for TX', txHash, 'to be mined.');
@@ -77,7 +70,7 @@ var waitForTx = function(txHash, callback){
         web3.eth.getTransactionReceipt(txHash, function(error, txData) {
             if (txData){
                 clearInterval(interval);
-                console.log('Mined !');
+                console.log('Mined!');
                 callback(txData);
             }
         })
@@ -109,159 +102,146 @@ var contracts = {
 }
 
 describe('Open Registry SDK', function() {
-
-	test('Start consumer SDK', function(done) {
-		console.log('Starting consumer sdk..');
-		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'consumer', function(newSdk){
-			consumerSdk = newSdk;
-			done();
-		});
-	});
-
-	test('Start registrant SDK', function(done) {
-		console.log('Startingregistrant sdk..');
-		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'registrant', function(newSdk){
-			registrantSdk = newSdk;
-			done();
-		});
-	});
-
 	test('Start certifier SDK', function(done) {
 		console.log('Starting sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
 		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'certifier', function(newSdk){
-			certifierSdk = newSdk;
+			sdk = newSdk;
 			done();
 		});
 	});
 
 	test('Configure Registrar', function(done) {
 		console.log('Configuring registrar address..');
-		certifierSdk.setRegistrar(config.registrarAddress).then(function(tx){
+		sdk.setRegistrar(config.registrarAddress).then(function(tx){
 			waitForTx(tx, function(txData){
 				if (txData.logs.length > 0){
-					assert.notEqual(parseInt(txData.logs[0].data.substring(65,66)),3, 'Already configured');
+					assert.notEqual(parseInt(txData.logs[0].data.substring(65,66)), 3, 'Already configured');
 				}
-				waitBlocks(1,done);
+				waitBlocks(1, done);
 			})
 		});
 	});
 
-	// test('Get registrar address from registry Registrar', function(done) {
-	// 	console.log('Getting registrar address..');
-	// 	consumerSdk.getRegistrarAddressOnRegistry().then(function(address){
-	// 		console.log('Registrar address:', address);
- //            done();
-	// 	});
-	// });
+ test('Get registrar address from registry Registrar', function(done) {
+		console.log('Getting registrar address..');
+		sdk.getRegistrarAddressOnRegistry().then(function(address){
+		assert.equal(address, config.registrarAddress);
+    done();
+ 	});
+ });
 
-	test('Create Schema', function(done) {
-		console.log('Creating Schema..');
-        certifierSdk.createSchema(schemaToAdd).then(function(tx){
-            waitForTx(tx, function(txData){
-                waitBlocks(1,done);
-            })
-        });
-	});
-
-  test('Add Registrant', function(done) {
-    console.log('Adding registrant',registrantToAddAddress);
-    certifierSdk.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
-        waitForTx(tx, function(txData){
-        assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address already registered or not CA permission.');
-            waitBlocks(3,done);
-        })
-      });
-  });
-
-	// test('Get Registrant', function(done) {
-	// 	consumerSdk.getRegistrant(registrantToAddAddress).then(function(registrant){
- //      assert(registrant.length > 0);
- //      assert.equal(registrant[0], registrantToAddAddress);
- //      assert.equal(registrant[1].name, registrantToAdd.name);
- //      done();
- //    })
- //    .catch(console.log);
-	// });
-
-	// test('Edit Registrant', function(done) {
-	// 	console.log('Editing registrant',registrantToAddAddress);
-	// 	registrantToAdd.name = 'Test registrant edited';
-	// 	certifierSdk.editRegistrant(registrantToAddAddress, registrantToAdd, true).then(function(tx){
-	//     	waitForTx(tx, function(txData){
-	// 			assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address not registered or not CA permission.');
-	//         	waitBlocks(1,done);
- //    		})
- //    	});
-	// });
- 
-  test('Add Things (PLURAL)', function(done) {
-    console.log('Adding things (PLURAL)');
-    registrantSdk.createThings(things, 1)
-    .then(function(tx){
-      waitForTx(tx, function(txData){
-        waitBlocks(3, done);
-      });
+ test('Create Schema', function(done) {
+  sdk.createSchema(schemaToAdd).then(function(tx){
+    waitForTx(tx, function(txData){
+      waitBlocks(1, done);
     });
   });
+ });
 
-  test('Get Things (PLURAL)', function(done) {
-    consumerSdk.getThing(severalIds[1])
-    .then(function(thing) {
-      assert.deepEqual(severalIds.slice(0,2), thing.identities);
-      assert.deepEqual(things[0].data, thing.data);
-      return consumerSdk.getThing(severalIds.slice(-1)[0]);
-    })
-    .then(function(thing) {
-      assert.deepEqual(severalIds.slice(-1), thing.identities);
-      assert.deepEqual(things[1].data, thing.data);
-      return done();
-    })
-    .catch(console.log); 
+ test('Get Schema info', function(done) {
+  console.log('Getting Schema..');
+  return sdk.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
+ 	 assert.equal(error, null);
+ 	 console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
+ 	 done();
   });
+ });
+
+
+	test('Add Registrant', function(done) {
+	  console.log('Adding registrant',registrantToAddAddress);
+	  sdk.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
+	    waitForTx(tx, function(txData){
+	      assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address already registered or not CA permission.');
+	      waitBlocks(1, done);
+	    })
+	  });
+	});
+
 
   test('Add Thing', function(done) {
     console.log('Adding thing', thingToAdd.data.name);
-    registrantSdk.createThing(thingToAdd, 1).then(function(tx){
-      waitForTx(tx, function(txData){
+    sdk.createThing(thingToAdd, 1).then(function(tx){
+      waitForTx(tx, function(txData) {
         assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
         //assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
-        waitBlocks(1,done);
-      })
+        waitBlocks(1, done);
+      });
     });
   });
 
-  test('Get Thing directly from contract', function(done) {
-    registrantSdk.registry.things.call(2, {from: config.myAddress}, function(err, data) {
-      if (!err) {
-        console.log('2', data);
-        done();
-      } else {
-        done(err);
-      }
-    }).catch(console.log);
-  });
+	// Intentionally not getting Thing here but getting it later, because there's some timeout / operation need for successful execution
+
+ test('Add Things (PLURAL)', function(done) {
+ 	console.log('Adding things (PLURAL)');
+ 	sdk.createThings(things, 1)
+ 	.then(function(tx){
+ 	assert.notEqual(tx, null);
+ 		waitForTx(tx, function(txData){
+ 			waitBlocks(1, done);
+ 		});
+ 	});
+ });
+
+
+ test('Get Things (PLURAL)', function(done) {
+ 	 sdk.getThing(things[0].identities[0])
+ 	.then(function(thing) {
+ 		assert.deepEqual(severalIds.slice(0,2), thing.identities);
+ 		assert.deepEqual(things[0].data, thing.data);
+ 		return sdk.getThing(severalIds.slice(-1)[0]);
+ 	})
+ .catch(console.log)
+ .then(function(thing) {
+ 		assert.deepEqual(severalIds.slice(-1), thing.identities);
+ 		assert.deepEqual(things[1].data, thing.data);
+ 		done();
+ 	})
+ 	.catch(console.log);
+ });
+
+
+test('Get Registrant', function(done) {
+ 	sdk.getRegistrant(registrantToAddAddress).then(function(registrant){
+    assert(registrant.length > 0);
+    assert.equal(registrant[0], registrantToAddAddress);
+    assert.equal(registrant[1].name, registrantToAdd.name);
+    done();
+  })
+  .catch(console.log);
+});
+
+
+ test('Edit Registrant', function(done) {
+ 	console.log('Editing registrant',registrantToAddAddress);
+ 	registrantToAdd.name = 'Test registrant edited';
+ 	sdk.editRegistrant(registrantToAddAddress, registrantToAdd, true).then(function(tx){
+    	waitForTx(tx, function(txData){
+ 			assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address not registered or not CA permission.');
+       	waitBlocks(1, done);
+  		});
+  	});
+ });
 
   test('Get Thing', function(done) {
-    consumerSdk.getThing(thingToAdd.identities[0])
+    sdk.getThing(thingToAdd.identities[0])
     .then(function(thing){
       assert.deepEqual(thingToAdd.data, thing.data);
+      assert.deepEqual(thingToAdd.identities, thing.identities);
       done();
     })
     .catch(console.log);
-  });   
+  });
 
 
-
-    test('Get Registrants', function(done) {
-		console.log('Get Registrants..');
-		consumerSdk.getRegistrants(false, config.fromBlock, function(registrants){
+  test('Get Registrants', function(done) {
+ 	console.log('Get Registrants..');
+ 	return sdk.getRegistrants(false, config.fromBlock, function(registrants){
             console.log(registrants.length, 'Registrants registered');
             if (registrants.length > 0){
                 console.log('Getting Registrant', registrants[0].args.registrant);
-                consumerSdk.getRegistrant(registrants[0].args.registrant).then(function(registrant){
+                sdk.getRegistrant(registrants[0].args.registrant).then(function(registrant){
                     console.log('Registrant', registrants[0].args.registrant, 'data:',registrant[1]);
                     done();
                 });
@@ -269,15 +249,5 @@ describe('Open Registry SDK', function() {
                 done();
             }
         });
-	});
-
-	test('Get Schema info', function(done) {
-		console.log('Getting Schema..');
-		consumerSdk.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
-			assert.notEqual(error, 'null', error);
-			console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
-            done();
-        });
-	});
-
+ });
 });
