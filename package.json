@@ -9,7 +9,8 @@
     "test-schema": "mocha integration/schema.js -u tdd --timeout 0 --reporter spec",
     "test-registrant": "mocha integration/registrant.js -u tdd --timeout 0 --reporter spec",
     "test-thing": "mocha integration/thing.js -u tdd --timeout 0 --reporter spec",
-    "test-consumer": "mocha integration/consumer.js -u tdd --timeout 0 --reporter spec"
+    "test-consumer": "mocha integration/consumer.js -u tdd --timeout 0 --reporter spec",
+    "test-registry": "mocha unit-tests-registry.js -u tdd --reporter spec"
   },
   "author": "Johann Barbie <johann@ambisafe.co> (http://ambisafe.co/)",
   "dependencies": {

@@ -5,6 +5,74 @@
 // 4) npm test
 
 
+
+
+var sniff = function(o, parentName, level) {
+  if (parentName) {
+    parentName += '.';
+  } else {
+    parentName = '';
+  }
+
+	if (!level) {
+		level = 0;
+	}
+	else if (level > 2) {
+		return;
+	}
+
+  for (prop in o) {
+    if (typeof(o[prop]) == 'function') {
+			var replacement = sniffWrap(o, o[prop], parentName + prop);
+
+			for (key in o[prop]) {
+				// console.log('PROP', key);
+				if (key) {
+					replacement[key] = o[prop][key];
+				}
+			}
+
+			o[prop] = replacement;
+			// Recursion
+			sniff(o[prop], parentName + prop, level + 1);
+
+
+    } else if (typeof(o[prop]) == 'object' || typeof(o[prop].call) == 'function') {
+			// Recursion
+  	}
+  }
+}
+
+var sniffWrap = function(self, func, name) {
+		return function() {
+			console.log('———————————————————');
+			console.log('CALL: ' + name + '()');
+			var args = [].slice.apply(arguments);
+			// Callback
+			if (typeof(args[args.length-1]) == 'function' ) {
+				args[args.length-1] = sniffWrap(self, args[args.length-1], 'Callback of ' + name);
+			}
+
+			console.log('PRMS:', args);
+			var res = func.apply(self, args);
+			console.log('RSLT:', res);
+			console.log("\n");
+			return res;
+		};
+}
+
+// sniff(obj);
+// obj.one.hello('Maksym');
+
+
+
+
+
+
+
+
+
+
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
 var OrUtils = require('../../open-registry-utils');
@@ -107,9 +175,17 @@ describe('Open Registry SDK', function() {
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
 		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'certifier', function(newSdk){
 			sdk = newSdk;
+			// console.log(sdk.registy);
+			// console.log(typeof(sdk.registry.createSchema));
+			// sniff(sdk.registry.createSchema);
+
+
+			sniff(sdk.registrar);
+			sniff(sdk.registry);
 			done();
 		});
 	});
+
 
 	test('Configure Registrar', function(done) {
 		console.log('Configuring registrar address..');
@@ -122,6 +198,8 @@ describe('Open Registry SDK', function() {
 			})
 		});
 	});
+
+
 
  test('Get registrar address from registry Registrar', function(done) {
 		console.log('Getting registrar address..');
