@@ -12,7 +12,7 @@
     "test-consumer": "mocha integration/consumer.js -u tdd --timeout 0 --reporter spec",
     "test-registry": "mocha unit-tests-registry.js -u tdd --reporter spec"
   },
-  "author": "Johann Barbie <johann@ambisafe.co> (http://ambisafe.co/)",
+  "author": "Ambisafe Inc. (http://ambisafe.co/)",
   "dependencies": {
     "async": "^1.5.2",
     "bigi": "^1.4.2",
