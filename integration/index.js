@@ -175,67 +175,62 @@ describe('Open Registry SDK', function() {
 		console.log('Starting sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
     // config.seedKey
-		provider = new Provider(config.urlProvider, 'registrar', config.seedKey, contracts, function(newSdk){
-			sdk = newSdk;
-
-			// sniff(sdk.registrar);
-			// sniff(sdk.registry);
-			done();
-		});
+		sdk = new Provider(config.urlProvider, 'registrar', config.seedKey, contracts);
+    done();
 
     // provider.addShim(config.registryAddress, registrantToAddAddress);
 	});
 
 
- // test('Configure Registrar', function(done) {
- // 	console.log('Configuring registrar address..');
- // 	sdk.setRegistrar(config.registrarAddress).then(function(tx){
- // 		waitForTx(tx, function(txData){
- // 			if (txData.logs.length > 0){
- // 				assert.notEqual(parseInt(txData.logs[0].data.substring(65,66)), 3, 'Already configured');
- // 			}
- // 			waitBlocks(1, done);
- // 		})
- // 	});
- // });
- //
- //
- //
- // test('Get registrar address from registry Registrar', function(done) {
- // 	console.log('Getting registrar address..');
- // 	sdk.getRegistrarAddressOnRegistry().then(function(address){
- // 	assert.equal(address, config.registrarAddress);
- //    done();
- // 	});
- // });
- //
- // test('Create Schema', function(done) {
- //  sdk.createSchema(schemaToAdd).then(function(tx){
- //    waitForTx(tx, function(txData){
- //      waitBlocks(1, done);
- //    });
- //  });
- // });
- //
- // test('Get Schema info', function(done) {
- //  console.log('Getting Schema..');
- //  return sdk.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
- // 	 assert.equal(error, null);
- // 	 console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
- // 	 done();
- //  });
- // });
- //
- //
- // test('Add Registrant', function(done) {
- //   console.log('Adding registrant', registrantToAddAddress);
- //   sdk.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
- //     waitForTx(tx, function(txData){
- //       assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address already registered or not CA permission.');
- //       waitBlocks(1, done);
- //     })
- //   });
- // });
+ test('Configure Registrar', function(done) {
+ 	console.log('Configuring registrar address..');
+ 	sdk.setRegistrar(config.registrarAddress).then(function(tx){
+ 		waitForTx(tx, function(txData){
+ 			if (txData.logs.length > 0){
+ 				assert.notEqual(parseInt(txData.logs[0].data.substring(65,66)), 3, 'Already configured');
+ 			}
+ 			waitBlocks(1, done);
+ 		})
+ 	});
+ });
+
+
+
+ test('Get registrar address from registry Registrar', function(done) {
+ 	console.log('Getting registrar address..');
+ 	sdk.getRegistrarAddressOnRegistry().then(function(address){
+ 	assert.equal(address, config.registrarAddress);
+    done();
+ 	});
+ });
+
+ test('Create Schema', function(done) {
+  sdk.createSchema(schemaToAdd).then(function(tx){
+    waitForTx(tx, function(txData){
+      waitBlocks(1, done);
+    });
+  });
+ });
+
+ test('Get Schema info', function(done) {
+  console.log('Getting Schema..');
+  return sdk.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
+ 	 assert.equal(error, null);
+ 	 console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
+ 	 done();
+  });
+ });
+
+
+ test('Add Registrant', function(done) {
+   console.log('Adding registrant', registrantToAddAddress);
+   sdk.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx){
+     waitForTx(tx, function(txData){
+       assert.notEqual(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Registrant address already registered or not CA permission.');
+       waitBlocks(1, done);
+     })
+   });
+ });
 
 
 
