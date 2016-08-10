@@ -248,7 +248,6 @@ describe('Open Registry SDK', function() {
 
 
 	// Intentionally not getting Thing here but getting it later, because there's some timeout / operation need for successful execution
-return;
  test('Add Things (PLURAL)', function(done) {
  	console.log('Adding things (PLURAL)');
  	sdk.createThings(things, 1)
