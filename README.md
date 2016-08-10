@@ -188,33 +188,3 @@ message Address {
 ## Integration testing
 
 To run a full integration test first configure the config file on integration/config.js. After doing it you can run a complete inetgration test with `npm run integration`, to tests specific methods another scripts like `npm run integration-configure` `npm run integration-schema` `npm run integration-registrant` `npm run integration-thing` `npm run integration-consumer` are available.
-
-### Node Modules Fixes
-
-* On node_modules/eth-lightwallet/lib/tx-utils.js add the sliceString function above createdContractAddress
-
-´´´
-function sliceString(bytes){
-    bytes = bytes.replace('0x','');
-    var slices = [];
-    while (bytes.length > 64) {
-        slices.push('0x' + bytes.substring(0, 64));
-        bytes = bytes.substring(64, bytes.length);
-    }
-    slices.push('0x' + bytes);
-    return slices;
-}
-
-function createdContractAddress (fromAddress, nonce) {
-  var buff = new Buffer(sliceString(fromAddress));
-  var rlpEncodedHex = rlp.encode([buff, nonce]);
-  var rlpEncodedWordArray = CryptoJS.enc.Hex.parse(rlpEncodedHex.toString('hex'));
-  var hash = CryptoJS.SHA3(rlpEncodedWordArray, {outputLength: 256}).toString(CryptoJS.enc.Hex);
-
-  return hash.slice(24);
-}
-´´´
-
-* On every ethereum-common replace params for the entire json object on params.json
-
-* On bitcore-lib/lib/crypto/hash.js replace ripemd160 for rmd160
