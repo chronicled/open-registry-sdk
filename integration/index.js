@@ -105,7 +105,7 @@ var registrantToAdd = {
 	}
 }
 
-var severalIds = ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f01", "ble:1.0:aabbccddee02", "pbk:ec:secp256r1:0222fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f03"]
+var severalIds = ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f01", "ble:1.0:aabbccddee02", "pbk:ec:secp256r1:0408e07141e07e622242f954dc89b656597a23a4dd3d212987c8cc0d827deccf7b704e94fb02bf21f54f622a9cdcb6a34981b91735d8227120a11c1b7eee983c50"]
 
 var things = [
   {identities: severalIds.slice(0, 2), data: {name: 'abc.com', description: 'Testing'}},
@@ -119,7 +119,7 @@ var schemaToAdd = {
 };
 
 var thingToAdd = {
-  identities: ['pbk:ec:secp256r1:0360fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f06', "ble:1.0:aabbccddee04"],
+  identities: ['pbk:ec:secp256r1:0408e07141e07e622242f954dc89b656597a23a4dd3d212987c8cc0d827deccf7b704e94fb02bf21f54f622a9cdcb6a34981b91735d8227120a11c1b7eee983c51', "ble:1.0:aabbccddee04"],
   data: {
     name: 'Test thing',
     description: ''
@@ -179,6 +179,7 @@ describe('Open Registry SDK', function() {
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
     // config.seedKey
 		sdk = new Provider(config.urlProvider, 'registrar', config.seedKey, contracts);
+
     done();
 
     // provider.addShim(config.registryAddress, registrantToAddAddress);
@@ -206,7 +207,7 @@ describe('Open Registry SDK', function() {
     done();
   });
 
-  return;
+
 
 
  test('Configure Registrar', function(done) {
@@ -296,7 +297,7 @@ describe('Open Registry SDK', function() {
  	})
  .catch(console.log)
  .then(function(thing) {
- 		assert.deepEqual(severalIds.slice(-1), thing.identities);
+ 		assert.deepEqual(OrUtils.common.compressAll(severalIds.slice(-1)), thing.identities);
  		assert.deepEqual(things[1].data, thing.data);
  		done();
  	})
@@ -330,8 +331,9 @@ test('Get Registrant', function(done) {
   test('Get Thing', function(done) {
     sdk.getThing(thingToAdd.identities[0])
     .then(function(thing){
+      console.log(thing);
       assert.deepEqual(thingToAdd.data, thing.data);
-      assert.deepEqual(thingToAdd.identities, thing.identities);
+      assert.deepEqual(OrUtils.common.compressAll(thingToAdd.identities), thing.identities);
       done();
     })
     .catch(console.log);
