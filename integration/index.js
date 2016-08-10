@@ -171,6 +171,9 @@ var contracts = {
 
 
 describe('Open Registry SDK', function() {
+
+
+
 	test('Start certifier SDK', function(done) {
 		console.log('Starting sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
@@ -180,6 +183,30 @@ describe('Open Registry SDK', function() {
 
     // provider.addShim(config.registryAddress, registrantToAddAddress);
 	});
+
+
+  test('ECC signature verification', function(done){
+    var urn = 'pbk:ec:secp256r1:0360FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6';
+    var challenge = 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf';
+    var signature = '3046022100efd48b2aacb6a8fd1140dd9cd45e81d69d2c877b56aaf991c34d0ea84eaf3716022100f7cb1c942d657c41d436c7a1b6e29f65f3e900dbb9aff4064dc4ab2f843acda8';
+
+    assert.equal(sdk.verifyIdentity(challenge, signature, urn), true);
+    assert.equal(sdk.verifyIdentity(challenge + '1', signature, urn), false);
+    done();
+  });
+
+
+  test('RSA signature verification', function(done){
+    var urn = 'pbk:rsa:2048:cb47e6aada931986bb6bbf02c8618437c072cefa4e19c1ee6cb189b95a49e3ce94fb4de129c30ab7e683f827c98eb05e844af24f809ed5f217e93c14d58f64b98fc9136d3c2b56a672853a8f52c7ac7acd201b09d0f578f32f377f954905e18fa360448901d0ac538cd1102dc0821cd13a843e370471c00e95daf4bba001186c5b2220e15f2f4777aa9b0a823186c34d82fd557e245b4d5816f48bdc09dd34806982609b63012dd13fe603f23730940e68463b1b68f24ee77907925d286d55ec22bad53119f8354388e051854ef436589538f1efbf104af477dc3ca2cf29974fcf432639b8716c38c717d44c8f0c90d59f02f2ab0aef8b59c2feb460e2cbfb57010001';
+    var challenge = 'e3ecf72fa4143b3416154b62d0b570609d13f080';
+    var signature = '2f6b41e6091269af8782b0b3e62f00cadd9c724c4ed50fd1c5f04bb1ea45796d71192ea297b0b1c161ae619243eecaaf20794e0abc397705e357941435fcdbcf45b9dc955ae5a366eb4b991a947941f0a94e41b81c4c13453f0ca0230ba6063d7f79f437c2ea26db40d6eafaecf6df7565b6a7673b05d5c5ff6d9420c4acb72a8905f6f79e9026940ce9c8d38c96dbf5a0388d3965caea316456553fbf4818c12c213c88015eaf2930148d7b23a57a71994bdea5113f661a24b6fe74d6fd347d41a0c63638be28f8410d4c1cd441fc38b5a0d4bbee1410babe5b4e5768a55f1f321354acecaf9e14981434bbe1c72fcfb0153b94141f6c48198f3890f95e8ce3';
+
+    assert.equal(sdk.verifyIdentity(challenge, signature, urn), true);
+    assert.equal(sdk.verifyIdentity(challenge + '1', signature, urn), false);
+    done();
+  });
+
+  return;
 
 
  test('Configure Registrar', function(done) {

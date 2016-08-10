@@ -15,12 +15,10 @@ var Provider = require('./lib/provider.js');
 var secretSeed = 'general famous baby ritual flower gift exit admit rice order addict cash';
 var rpcUrl = 'http://52.28.142.166:8555';
 
-var provider = new Provider(rpcUrl, secretSeed);
+var registrant = new Provider(rpcUrl, 'registrant', secretSeed);
 
 //setting up sdk with provider and address of contract
 var registryAddress = '0x445116d182627e5a68878daa21fbf61845c02ef9';
-
-var registrant = new RegistrantSdk(provider, registryAddress);
 
 //playing with the registry
 var thing = {
@@ -82,7 +80,7 @@ var Provider = require('./lib/provider.js');
 var secretSeed = 'general famous baby ritual flower gift exit admit rice order addict cash';
 var rpcUrl = 'http://52.28.142.166:8555';
 
-var provider = new Provider(rpcUrl, secretSeed);
+var provider = new Provider(rpcUrl, 'registrar', secretSeed);
 
 //setting up sdk with provider and address of contract
 var registrarAddress = '0xa1764df8d613c2223f09af603f527dbb207fcc43';

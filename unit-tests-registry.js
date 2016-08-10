@@ -160,11 +160,8 @@ describe('Open Registry SDK', function() {
     sinon.stub(Provider.prototype, 'getRegistry').returns(registry);
     sinon.stub(Provider.prototype, 'getRegistrar').returns(registrar);
 
-		provider = new Provider('', '', '', 'certifier', function(newSdk){
-			sdk = newSdk;
-
-			done();
-		});
+		sdk = new Provider('', 'registrar');
+		done();
 	});
 
 

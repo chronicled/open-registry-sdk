@@ -66,7 +66,7 @@ describe('Open Registry SDK', function() {
 	test('Start consumer SDK', function(done) {
 		console.log('Starting consumer sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
-		provider = new Provider(config.urlProvider, config.seedKey, contracts, 'consumer', function(newSdk){
+		provider = new Provider(config.urlProvider, 'registrar', config.seedKey, contracts, function(newSdk){
 			sdk = newSdk;
 			done();
 		});
