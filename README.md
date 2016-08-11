@@ -149,6 +149,8 @@ var rpcUrl = 'http://localhost:8545';
 
 var sdk = new Provider(rpcUrl, 'registrar', secret);
 
+
+// Add Registrant
 var registrant = {
     name: "Company",
     description: "Open Registry participator",
@@ -165,11 +167,19 @@ var registrant = {
     }
 };
 
-//Add registrant
-certifier.addRegistrant('0x7111b812c1f8c93abb2c795f8fd5a202264c1111', registrant).then(function(txHash) {
+var address = '0x7111b812c1f8c93abb2c795f8fd5a202264c1111';
+sdk.addRegistrant(address, registrant).then(function(txHash) {
   // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
   console.log(txHash);
 });
+
+
+// Get Registrant's information. After transaction is committed
+sdk.getRegistrant(address).then(function(registrant) {
+  // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
+  console.log(registrant);
+});
+
 
 //Add Thing metadata schema
 var metadataSchema = 'message Thing { optional string name = 1; optional string description = 2; optional string service_url = 3; }';
@@ -187,7 +197,7 @@ sdk.createSchema(schemaContainer).then(function(txHash) {
 ```
 
 
-## Metadata Details
+## Metadata
 
 ### Thing Metadata Format
 
