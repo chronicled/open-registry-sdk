@@ -1,3 +1,4 @@
 [submodule "open-registry-utils"]
 	path = open-registry-utils
 	url = git@github.com:chronicled/open-registry-utils.git
+	branch = id-handling
