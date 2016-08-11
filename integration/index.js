@@ -191,8 +191,8 @@ describe('Open Registry SDK', function() {
     var challenge = 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf';
     var signature = '3046022100efd48b2aacb6a8fd1140dd9cd45e81d69d2c877b56aaf991c34d0ea84eaf3716022100f7cb1c942d657c41d436c7a1b6e29f65f3e900dbb9aff4064dc4ab2f843acda8';
 
-    assert.equal(sdk.verifyIdentity(challenge, signature, urn), true);
-    assert.equal(sdk.verifyIdentity(challenge + '1', signature, urn), false);
+    assert.equal(sdk.verifyIdentity(urn, challenge, signature), true);
+    assert.equal(sdk.verifyIdentity(urn, challenge + '1', signature), false);
     done();
   });
 
@@ -202,8 +202,8 @@ describe('Open Registry SDK', function() {
     var challenge = 'e3ecf72fa4143b3416154b62d0b570609d13f080';
     var signature = '2f6b41e6091269af8782b0b3e62f00cadd9c724c4ed50fd1c5f04bb1ea45796d71192ea297b0b1c161ae619243eecaaf20794e0abc397705e357941435fcdbcf45b9dc955ae5a366eb4b991a947941f0a94e41b81c4c13453f0ca0230ba6063d7f79f437c2ea26db40d6eafaecf6df7565b6a7673b05d5c5ff6d9420c4acb72a8905f6f79e9026940ce9c8d38c96dbf5a0388d3965caea316456553fbf4818c12c213c88015eaf2930148d7b23a57a71994bdea5113f661a24b6fe74d6fd347d41a0c63638be28f8410d4c1cd441fc38b5a0d4bbee1410babe5b4e5768a55f1f321354acecaf9e14981434bbe1c72fcfb0153b94141f6c48198f3890f95e8ce3';
 
-    assert.equal(sdk.verifyIdentity(challenge, signature, urn), true);
-    assert.equal(sdk.verifyIdentity(challenge + '1', signature, urn), false);
+    assert.equal(sdk.verifyIdentity(urn, challenge, signature), true);
+    assert.equal(sdk.verifyIdentity(urn, challenge + '1', signature), false);
     done();
   });
 
