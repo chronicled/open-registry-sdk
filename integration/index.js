@@ -187,7 +187,7 @@ describe('Open Registry SDK', function() {
 
 
   test('ECC signature verification', function(done){
-    var urn = 'pbk:ec:secp256r1:0360FED4BA255A9D31C961EB74C6356D68C049B8923B61FA6CE669622E60F29FB6';
+    var urn = 'pbk:ec:secp256r1:0360fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29fb6';
     var challenge = 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf';
     var signature = '3046022100efd48b2aacb6a8fd1140dd9cd45e81d69d2c877b56aaf991c34d0ea84eaf3716022100f7cb1c942d657c41d436c7a1b6e29f65f3e900dbb9aff4064dc4ab2f843acda8';
 
