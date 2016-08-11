@@ -24,7 +24,7 @@ Please find information on smart contracts and Thing's identity format in the re
 There's 3 basic user-roles, and functionality is wrapped around them:
 - Consumer — readonly access: fetch Things and Registrants, verify ECC and RSA signature of a hardware Thing.
 - Registrant — add new Things to the Registry, add new identities to a Thing, update metadata, set Thing as invalid / disabled (can be useful if Thing is hacked, or manufacturer recalled product after publishing it in Open Registry).
-— Registrar — add / whitelist Registrants, update it's data on request, set as disabled on request or if Registrant is compromised.
+- Registrar — add / whitelist Registrants, update it's data on request, set as disabled on request or if Registrant is compromised.
 
 Note: When instantiating SDK, role name is provided, each higher-level role automatically inherits functionality from it's lower-level siblings.
 
@@ -33,16 +33,14 @@ Note: When instantiating SDK, role name is provided, each higher-level role auto
 
 ### Prerequisites
 
-- Ethereum node up and running on mainnet, accepting RPC requests through http protocol. Find how to this here: [TODO: include ethereum repo link].
+- Ethereum node up and running on mainnet, accepting RPC requests through http protocol. Find how to this in official instructions: https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum.
 - Open Registry for IoT is installed: `npm install open-registry-sdk`
 
 ### Consumer
 
-As a consumer, i can can read Things from the blockchain and use the public key for verification.
+Can fetch Things and Registrants from smart contracts and verify Thing's signature.
 ```js
 var Provider = require('open-registry-sdk');
-
-// setting up provider for reading
 var sdk = new Provider('http://localhost:8545');
 
 consumer.getThing('pbk:ec:secp256r1:03267b55460f97c2b5db61296b89fb976be632170900ca4f063fda13be5deb334c').then(function(thing) {
@@ -65,6 +63,8 @@ consumer.verifyIdentity(identity, message, signature);
 
 
 ### Registrant
+
+Can create and manage Things.
 
 [TODO: publish private key of the community Registrant]
 Note: when creating Thing unique identities have to be used.
