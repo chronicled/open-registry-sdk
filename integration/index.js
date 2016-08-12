@@ -265,12 +265,16 @@ describe('Open Registry SDK', function() {
   test('Add Thing', function(done) {
     console.log('Adding thing', thingToAdd.data.name);
     sdk.createThing(thingToAdd, 1).then(function(tx){
-      waitForTx(tx, function(txData) {
-        console.log(txData);
-        assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
-        //assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
-        waitBlocks(1, done);
-      });
+      sdk.getTransactionResult(tx).then(function(result) {
+        assert.equal(result, true);
+
+        waitForTx(tx, function(txData) {
+          console.log(txData);
+          assert.notEqual(txData.logs.length, 0, 'Cant add new things if you are not a registrant');
+          //assert.equal(txData.logs[0].data.toString(), '0x0000000000000000000000000000000000000000000000000000000000000001', 'Identity already used');
+          waitBlocks(1, done);
+        });
+      }).catch(console.log);
     });
   });
 
