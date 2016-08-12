@@ -14,6 +14,7 @@
   },
   "author": "Ambisafe Inc. (http://ambisafe.co/)",
   "dependencies": {
+    "open-registry-utils": "git://git@github.com:chronicled/open-registry-utils.git#id-handling",
     "async": "^1.5.2",
     "bigi": "^1.4.2",
     "bignumber.js": "^2.3.0",
