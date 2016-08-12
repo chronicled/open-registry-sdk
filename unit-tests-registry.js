@@ -1,8 +1,5 @@
-// To run tests successfully:
-// 1) Run  testrpc --account="0xf779e7e7fdb6d022781994a02450ef818b08567e1161946cc57f0207a9c1b5bf,9999999999999999999999999" --gasLimit=4000000 -b=1
-// 2) Have your contracts deployed, you can do that with "truffle deploy"    in open-registry-ethereum
-// 3) Update addresses of contracts if necessary in integration/config.js file
-// 4) npm test
+// To run tests
+// mocha unit-tests-registry.js
 
 
 var assert = require("assert");
@@ -153,7 +150,7 @@ var registrar = {
 
 
 describe('Open Registry SDK', function() {
-	it('Start certifier SDK', function(done) {
+	it('Start Registrar SDK', function(done) {
 
 
     // console.log(Provider.prototype.getRegistry)
@@ -169,6 +166,25 @@ describe('Open Registry SDK', function() {
     sdk.setRegistrar(registrar.address).then(function(tx){
       done();
     });
+  });
+
+	it('Incorrect URN protocol', function(done, error) {
+		var errors = 0;
+    sdk.createThing({identities: ["ble:2.0:aabbccddee02"], data: {}})
+		.then(console.log).catch(function(error){
+			errors++;
+			return sdk.createThing({identities: ["ble:1.5:aabbccddee"], data: {}});
+		}).then(console.log).catch(function() {
+			errors++;
+			return sdk.createThing({identities: ["pbk:ec:secp256k1:aabbccddee"], data: {}});
+		}).then(console.log).catch(function() {
+			errors++;
+			return sdk.createThing({identities: ["pbk:ec:secp256r1d:aabbccddee"], data: {}});
+		}).then(console.log).catch(function() {
+			errors++;
+			assert.equal(errors, 4);
+			done();
+		});
   });
 
   it('Get registrar address from registry Registrar', function(done) {
