@@ -25,7 +25,8 @@
     "object-assign": "^4.1.0",
     "protobufjs": "^5.0.1",
     "web3": "^0.17.0-alpha",
-    "web3-provider-engine": "^7.7.0"
+    "web3-provider-engine": "^7.7.0",
+    "open-registry-utils": "*"
   },
   "devDependencies": {
     "chai": "^3.5.0",
