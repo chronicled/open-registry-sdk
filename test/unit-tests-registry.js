@@ -4,14 +4,14 @@
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
-var OrUtils = require('../open-registry-utils');
+var OrUtils = require('../../open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
-var Provider = require('./lib/provider.js');
+var Provider = require('../lib/provider.js');
 var sinon = require('sinon');
 
 
-builder = ProtoBuf.loadJson(require('./schemas/schema.proto.json'));
+builder = ProtoBuf.loadJson(require('../schemas/schema.proto.json'));
 var Schema = builder.build("Schema").Schema;
 
 
