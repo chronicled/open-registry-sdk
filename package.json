@@ -4,30 +4,25 @@
   "description": "",
   "main": "lib/provider.js",
   "scripts": {
-    "test": "mocha integration/index.js -u tdd --timeout 0",
-    "test-configure": "mocha integration/configure.js -u tdd --timeout 0 --reporter spec",
-    "test-schema": "mocha integration/schema.js -u tdd --timeout 0 --reporter spec",
-    "test-registrant": "mocha integration/registrant.js -u tdd --timeout 0 --reporter spec",
-    "test-thing": "mocha integration/thing.js -u tdd --timeout 0 --reporter spec",
-    "test-consumer": "mocha integration/consumer.js -u tdd --timeout 0 --reporter spec",
-    "test-registry": "mocha unit-tests-registry.js -u tdd --reporter spec"
+    "test": "mocha test/index.test.js -u tdd --timeout 0",
+    "test-unit": "mocha test/unit-tests-registry.js -u tdd --reporter spec"
   },
   "author": "Ambisafe Inc. (http://ambisafe.co/)",
   "dependencies": {
-    "open-registry-utils": "git://git@github.com:chronicled/open-registry-utils.git#id-handling",
     "async": "^1.5.2",
     "bigi": "^1.4.2",
     "bignumber.js": "^2.3.0",
     "bitcore-lib": "0.13.16",
     "bytebuffer": "^5.0.1",
+    "chai": "^3.5.0",
     "es6-promise": "^3.1.2",
     "eth-lightwallet": "^2.4.3",
     "json-parser": "^1.1.5",
     "object-assign": "^4.1.0",
+    "open-registry-utils": "*",
     "protobufjs": "^5.0.1",
     "web3": "^0.17.0-alpha",
-    "web3-provider-engine": "^7.7.0",
-    "open-registry-utils": "*"
+    "web3-provider-engine": "^7.7.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
