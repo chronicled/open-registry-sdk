@@ -160,9 +160,9 @@ var waitBlocks = function(blocks, callback){
 
 var contracts = {
 	registryAddress : config.registryAddress,
-	registryAbi : config.registryABI,
+	// registryAbi : config.registryABI,
 	registrarAddress : config.registrarAddress,
-	registrarABI : config.registrarABI,
+	// registrarABI : config.registrarABI,
 }
 
 
@@ -178,7 +178,8 @@ describe('Open Registry SDK', function() {
 		console.log('Starting sdk..');
 		web3.setProvider(new web3.providers.HttpProvider(config.urlProvider));
     // config.seedKey
-		sdk = new Provider(config.urlProvider, 'registrar', config.seedKey, contracts);
+    // config.seedKey
+		sdk = new Provider(config.urlProvider, 'registrar', "f779e7e7fdb6d022781994a02450ef818b08567e1161946cc57f0207a9c1b5bf", contracts);
 
     done();
 
@@ -240,14 +241,15 @@ describe('Open Registry SDK', function() {
   });
  });
 
+
  test('Get Schema info', function(done) {
   console.log('Getting Schema..');
-  return sdk.registry.schemas.call(schemaToGet, {from: config.myAddress}, function(error, data) {
- 	 assert.equal(error, null);
- 	 console.log('Schema at', schemaToGet, ':', Schema.decodeHex(data));
- 	 done();
+  return sdk.getSchema(schemaToGet).then(function(schema) {
+    assert.deepEqual(schema, schemaToAdd);
+ 	  done();
   });
  });
+
 
 
  test('Add Registrant', function(done) {
@@ -259,8 +261,6 @@ describe('Open Registry SDK', function() {
      })
    });
  });
-
-
 
   test('Add Thing', function(done) {
     console.log('Adding thing', thingToAdd.data.name);
@@ -279,7 +279,7 @@ describe('Open Registry SDK', function() {
   });
 
 
-	// Intentionally not getting Thing here but getting it later, because there's some timeout / operation need for successful execution
+ // Intentionally not getting Thing here but getting it later, because there's some timeout / operation need for successful execution
  test('Add Things (PLURAL)', function(done) {
  	console.log('Adding things (PLURAL)');
  	sdk.createThings(things, 1)
