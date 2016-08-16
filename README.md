@@ -43,13 +43,13 @@ Can fetch Things and Registrants from smart contracts and verify Thing's signatu
 var Provider = require('open-registry-sdk');
 var sdk = new Provider('http://localhost:8545');
 
-consumer.getThing('pbk:ec:secp256r1:03267b55460f97c2b5db61296b89fb976be632170900ca4f063fda13be5deb334c').then(function(thing) {
+sdk.getThing('pbk:ec:secp256r1:03267b55460f97c2b5db61296b89fb976be632170900ca4f063fda13be5deb334c').then(function(thing) {
     console.log(thing);
 });
 
-consumer.getRegistrant('0x4a282993420bd9770b410b9b0324f2b8bf5964ab').then(function(registrant) {
+sdk.getRegistrant('0x4a282993420bd9770b410b9b0324f2b8bf5964ab').then(function(registrant) {
     console.log(registrant);
-});
+}).catch(console.log); // Way to get errors from operation.
 
 
 var identity = 'pbk:ec:secp256r1:0360fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29fb6';
