@@ -4,7 +4,7 @@
 
 var assert = require("assert");
 var ProtoBuf = require("protobufjs");
-var OrUtils = require('../../open-registry-utils');
+var OrUtils = require('open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
 var Provider = require('../lib/provider.js');
@@ -101,7 +101,7 @@ var registry = {
   },
 
   createSchema: function(schema){
-    assert.equal(schema, '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d');
+    assert.equal(schema, '0x0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d');
     invokeCallback(arguments, [ null, '0x52350d231f54851cf066d5b6482fe041edd63909da48c08ffa93645f44ff76bf' ]);
   },
 
@@ -157,7 +157,7 @@ describe('Open Registry SDK', function() {
     sinon.stub(Provider.prototype, 'getRegistry').returns(registry);
     sinon.stub(Provider.prototype, 'getRegistrar').returns(registrar);
 
-		sdk = (new Provider('', 'registrar')).getSdk();
+		sdk = new Provider('', 'registrar');
 		done();
 	});
 
@@ -222,7 +222,7 @@ describe('Open Registry SDK', function() {
  it('Create Schema', function(done) {
     sdk.createSchema(schemaToAdd).then(function(tx){
       done();
-    });
+    }).catch(console.log);
  });
 
 

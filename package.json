@@ -4,8 +4,8 @@
   "description": "",
   "main": "lib/provider.js",
   "scripts": {
-    "test": "mocha test/add-registrant.js -u tdd --timeout 0",
-    "test-basic": "mocha test/basic-sdk.js -u tdd --reporter spec"
+    "test-basic": "mocha test/add-registrant.js -u tdd --timeout 0",
+    "test": "mocha test/basic-sdk.js -u tdd --reporter spec"
   },
   "author": "Ambisafe Inc. (http://ambisafe.co/)",
   "dependencies": {
