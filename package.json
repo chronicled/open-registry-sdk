@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test-bare-min": "mocha test/add-registrant.js -u tdd --timeout 0",
-    "test": "mocha test/basic-sdk.js -u tdd --reporter spec"
-    "build": "webpack",
+    "test": "mocha test/basic-sdk.js -u tdd --reporter spec",
+    "build": "webpack"
   },
   "author": "Ambisafe Inc. (http://ambisafe.co/)",
   "dependencies": {
