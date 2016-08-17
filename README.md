@@ -243,3 +243,9 @@ message Address {
     required string country = 6;
 }
 ```
+
+### In browser usage
+
+- Build the minified bundle: `npm run build`
+- Reference the script on your page: `<script src="./browser/bundle.min.js"></script>`
+- Instantiate SDK: `var sdk = new OpenRegistrySDK();`
