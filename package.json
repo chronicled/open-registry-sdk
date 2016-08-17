@@ -1,5 +1,5 @@
 {
-  "name": "open-registry-sdk",
+  "name": "@chronicled/open-registry-sdk",
   "version": "0.0.4",
   "description": "",
   "main": "index.js",
