@@ -12,6 +12,11 @@ dependencies:
     - npm install -g npm-cli-login@0.0.10 npm@3.3.12
     - NPM_USER=$NPM_USERNAME NPM_PASS=$NPM_PASSWORD npm-cli-login
 
+test:
+  override:
+    - npm run lint
+    - npm run test
+
 deployment:
   production:
     branch: master
