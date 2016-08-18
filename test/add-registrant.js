@@ -1,13 +1,13 @@
 var expect = require('chai').expect;
-var Registrant = require('./lib/registrant');
-var Certifier = require('./lib/certifier');
-var Consumer = require('./lib/consumer');
+var Registrant = require('../lib/registrant');
+var Registrar = require('../lib/registrar');
+var Consumer = require('../lib/consumer');
 var ProtoBuf = require("protobufjs");
 var sinon = require('sinon');
 var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
-var proto = require('./schemas/schema.proto.json');
-var Provider = require('./lib/provider');
+var proto = require('../schemas/schema.proto.json');
+var Provider = require('../lib/provider');
 var provider = new Provider();
 
 
@@ -110,13 +110,13 @@ describe('Certifier SDK', function() {
     var contract = { add: function() {} , schemas: { call: function() {} }};
     sinon.stub(contract, 'add').yields(null, 'txhash');
 
-    var certifier = new Certifier({
+    var registrar = new Registrar({
       getRegistrar: function() {return contract;},
       getWeb3: function() {},
       getAddress: function() {}
     });
 
-    certifier.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx) {
+    registrar.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx) {
       expect(contract.add).calledWith(registrantToAddAddress, regEncoded, sinon.match.any, sinon.match.any);
       done();
     }).catch(done);

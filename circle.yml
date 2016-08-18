@@ -1,0 +1,25 @@
+machine:
+  node:
+    version: 5.5.0
+
+# CircleCI bundles node 5.5.0 w/ npm 2.13.5, whereas node itself advertises
+# that 5.5.0 works w/ npm 3.3.12
+# https://discuss.circleci.com/t/wrong-npm-version-with-node-5-0-5-1/827/3
+# https://nodejs.org/en/download/releases/
+dependencies:
+  pre:
+    - rm -rf node_modules
+    - npm install -g npm-cli-login@0.0.10 npm@3.3.12
+    - NPM_USER=$NPM_USERNAME NPM_PASS=$NPM_PASSWORD npm-cli-login
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - npm --no-git-tag-version version `git describe --abbrev=0`
+      - npm --no-git-tag-version version patch
+      - git config --global user.email $GIT_EMAIL
+      - git config --global user.name $GIT_USERNAME
+      - git tag -a v`node .bin/version.js` -m v`node .bin/version.js`
+      - npm publish
+      - git push --tags
