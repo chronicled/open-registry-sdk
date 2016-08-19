@@ -21,6 +21,7 @@ deployment:
   production:
     branch: master
     commands:
+      - npm run-script build
       - npm --no-git-tag-version version `git describe --abbrev=0`
       - npm --no-git-tag-version version patch
       - git config --global user.email $GIT_EMAIL
