@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "webpack": {
+      "version": "1.13.1",
+      "from": "webpack@1.13.1",
+      "dependencies": {
+        "node-libs-browser": {
+          "version": "1.0.0",
+          "from": "node-libs-browser@0.5.3"
+        }
+      }
+    }
+  }
+}
