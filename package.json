@@ -11,8 +11,8 @@
     "lint": "./node_modules/.bin/eslint lib/*.js"
   },
   "contributors": [
-    "Ambisafe Inc. (http://ambisafe.co/)",
-    "Chronicled Inc. (http://chronicled.com)"
+    "Chronicled Inc. (http://chronicled.com)",
+    "Ambisafe Inc. (http://ambisafe.co/)"
   ],
   "devDependencies": {
     "async": "^1.5.2",
