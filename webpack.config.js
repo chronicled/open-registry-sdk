@@ -16,39 +16,82 @@ var path = require('path');
 var webpack = require('webpack');
 var libraryName = 'open-registry-sdk';
 var outputFile = libraryName + '.js';
+var nodeExternals = require('webpack-node-externals');
+
 
 module.exports = {
-  entry: path.join(__dirname, 'index.js'),
+
   target: 'node',
+  externals: {
+      'crypto': 'crypto',
+      'memcpy': 'memcpy',
+      'sha3': 'sha3',
+      'fs': 'fs',
+      // 'crypto-js': '../node_modules/crypto-js/'
+  },
+
+  entry: "./index.js",
   output: {
     path: path.join(__dirname, 'build'),
-    filename: outputFile,
+    filename: libraryName + ".js",
     library: libraryName,
-    libraryTarget: 'umd',
+    libraryTarget: "umd",
     umdNamedDefine: true
   },
+
+  node: {
+    // fs: "empty",
+    console: false,
+    global: true,
+    process: true,
+    Buffer: true,
+  },
+
+  resolve: {
+    extensions: ['', '.js', 'index.js', '.json', 'index.json'],
+    modulesDirectories: [
+      'node_modules'
+    ]
+  },
+
+  "definitions": {
+      "process.env": {
+          "NODE_ENV": "\"development\"",
+          "IS_BROWSER": false
+      },
+      __webpack_amd_options__: {}
+  },
+
   module: {
     preLoaders: [
-      {test: /\.json/, loader: "json-loader"}
+        { test: /\.json$/, loader: 'json'}
     ],
-    noParse: /node_modules\/json-schema\/lib\/validate\.js/,
-    loaders: [{
-      test: /\.js/,
-      loader: "babel",
-      query: {
-        presets: ['es2015']
-      }
-    }]
+    noParse: [/(node_modules\/json-schema\/lib\/validate\.js|\.md)/, /node_modules\/crypto-js/],
+    loaders: [
+        { test: /\.js$/,
+          exclude: [
+            // /node_modules\/(?!(ethereumjs-tx|web3\-provider\-engine|crypto\-js)\/).*/,
+            /node_modules\/crypto-js/
+          ],
+          loader: 'babel',
+          query: {
+            presets: ['es2015'],
+            plugins: ['transform-remove-strict-mode']
+          }
+        },
+    ]
   },
-  node: {
-    console: true,
-    fs: "empty",
-    net: 'empty',
-    tls: 'emtpy'
+  resolveLoader: {
+        root: path.join(__dirname, 'node_modules'),
+        packageMains: ['json-loader']
   },
+  devtool: '#eval',
+
   plugins: [
+    new webpack.DefinePlugin({ "global.GENTLY": false }),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.IgnorePlugin(/\.\/core/),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ]
 };
