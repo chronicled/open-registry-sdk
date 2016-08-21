@@ -17,71 +17,52 @@ var webpack = require('webpack');
 var libraryName = 'open-registry-sdk';
 var outputFile = libraryName + '.js';
 var nodeExternals = require('webpack-node-externals');
+var ignore = new webpack.IgnorePlugin(/README.md/);
 
 
 module.exports = {
 
   target: 'node',
-  externals: {
-    'crypto': 'crypto',
-    'memcpy': 'memcpy',
-    'sha3': 'sha3',
-    'fs': 'fs',
-    'vertx': 'vertx',
-  },
   entry: "./index.js",
   output: {
     path: path.join(__dirname, 'build'),
     filename: libraryName + ".js",
     library: libraryName,
-    libraryTarget: "umd",
-    umdNamedDefine: true
+    libraryTarget: "commonjs2",
   },
-
-  node: {
-    // fs: "empty",
-    console: false,
-    global: true,
-    process: true,
-    Buffer: true,
-  },
-
   resolve: {
     extensions: ['', '.js', 'index.js', '.json', 'index.json'],
     modulesDirectories: [
       'node_modules'
     ]
   },
-
   module: {
     preLoaders: [
-        { test: /\.json$/, loader: 'json'}
+      {test: /\.json$/, loader: 'json'}
     ],
-    noParse: [/(node_modules\/json-schema\/lib\/validate\.js|\.md)/, /node_modules\/crypto-js/],
+    noParse: [/(node_modules\/json-schema\/lib\/validate\.js|\.md)/],
     loaders: [
-        { test: /\.js$/,
-          exclude: [
-            // /node_modules\/(?!(ethereumjs-tx|web3\-provider\-engine|crypto\-js)\/).*/,
-            ///node_modules\/crypto-js/
-          ],
-          loader: 'babel',
-          query: {
-            presets: ['es2015'],
-            plugins: ['transform-remove-strict-mode']
-          }
-        },
+      {
+        test: /\.js$/,
+        loader: 'babel',
+        query: {
+          presets: ['es2015'],
+          plugins: ['transform-remove-strict-mode']
+        }
+      }
     ]
   },
   resolveLoader: {
         root: path.join(__dirname, 'node_modules'),
         packageMains: ['json-loader']
   },
-  devtool: '#eval',
-
+  devtool: 'sourcemap',
   plugins: [
+    ignore,
     new webpack.ProvidePlugin({
       'Promise': 'es6-promise',
     }),
+    new webpack.BannerPlugin('require("source-map-support").install();', {raw: true, entryOnly: false}),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
