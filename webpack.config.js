@@ -23,13 +23,12 @@ module.exports = {
 
   target: 'node',
   externals: {
-      'crypto': 'crypto',
-      'memcpy': 'memcpy',
-      'sha3': 'sha3',
-      'fs': 'fs',
-      // 'crypto-js': '../node_modules/crypto-js/'
+    'crypto': 'crypto',
+    'memcpy': 'memcpy',
+    'sha3': 'sha3',
+    'fs': 'fs',
+    'vertx': 'vertx',
   },
-
   entry: "./index.js",
   output: {
     path: path.join(__dirname, 'build'),
@@ -54,14 +53,6 @@ module.exports = {
     ]
   },
 
-  "definitions": {
-      "process.env": {
-          "NODE_ENV": "\"development\"",
-          "IS_BROWSER": false
-      },
-      __webpack_amd_options__: {}
-  },
-
   module: {
     preLoaders: [
         { test: /\.json$/, loader: 'json'}
@@ -71,7 +62,7 @@ module.exports = {
         { test: /\.js$/,
           exclude: [
             // /node_modules\/(?!(ethereumjs-tx|web3\-provider\-engine|crypto\-js)\/).*/,
-            /node_modules\/crypto-js/
+            ///node_modules\/crypto-js/
           ],
           loader: 'babel',
           query: {
@@ -88,10 +79,11 @@ module.exports = {
   devtool: '#eval',
 
   plugins: [
-    new webpack.DefinePlugin({ "global.GENTLY": false }),
+    new webpack.ProvidePlugin({
+      'Promise': 'es6-promise',
+    }),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.IgnorePlugin(/\.\/core/),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ]
 };
