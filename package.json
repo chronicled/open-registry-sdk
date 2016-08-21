@@ -2,7 +2,7 @@
   "name": "open-registry-sdk",
   "version": "0.0.0",
   "description": "",
-  "main": "./build/index.js",
+  "main": "./build/open-registry-sdk.js",
   "scripts": {
     "test-bare-min": "mocha test/add-registrant.js -u tdd --timeout 0",
     "test": "mocha test/basic-sdk.js -u tdd --reporter spec",

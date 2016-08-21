@@ -21,7 +21,7 @@ var ProtoBuf = require("protobufjs");
 var OrUtils = require('open-registry-utils');
 var Web3 = require('web3');
 var ByteBuffer = require('bytebuffer');
-var Provider = require('../lib/provider.js');
+var Provider = require('../build/index.js');
 var sinon = require('sinon');
 
 
