@@ -59,9 +59,6 @@ module.exports = {
   //devtool: 'sourcemap',
   plugins: [
     ignore,
-    new webpack.ProvidePlugin({
-      'Promise': 'es6-promise',
-    }),
     //new webpack.BannerPlugin('require("source-map-support").install();', {raw: true, entryOnly: false}),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
