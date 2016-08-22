@@ -6,7 +6,7 @@
   "scripts": {
     "test-bare-min": "mocha test/add-registrant.js -u tdd --timeout 0",
     "test": "mocha test/basic-sdk.js -u tdd --reporter spec",
-    "build": "cp -R $(ls | grep -v '^build$' | grep -v '^\\.') build/ && node_modules/babel-cli/bin/babel.js --presets es2015 node_modules/web3-provider-engine --out-dir build/node_modules/web3-provider-engine && node_modules/babel-cli/bin/babel.js --presets es2015 node_modules/ethereumjs-tx --out-dir build/node_modules/ethereumjs-tx",
+    "build": "mkdir -p build && cp -R $(ls | grep -v '^build$' | grep -v '^\\.') build/ && node_modules/babel-cli/bin/babel.js --presets es2015 node_modules/web3-provider-engine --out-dir build/node_modules/web3-provider-engine && node_modules/babel-cli/bin/babel.js --presets es2015 node_modules/ethereumjs-tx --out-dir build/node_modules/ethereumjs-tx",
     "build-web": "webpack",
     "lint": "./node_modules/.bin/eslint lib/*.js"
   },
