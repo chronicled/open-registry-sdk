@@ -47,7 +47,7 @@ module.exports = {
         loader: 'babel',
         query: {
           presets: ['es2015'],
-          plugins: ['transform-remove-strict-mode']
+          plugins: ['transform-remove-strict-mode', 'transform-object-assign']
         }
       }
     ]
