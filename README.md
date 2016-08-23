@@ -41,13 +41,13 @@ Note: When instantiating SDK, role name is provided, each higher-level role auto
 Can fetch Things and Registrants from smart contracts and verify Thing's signature.
 ```js
 var Provider = require('open-registry-sdk');
-var sdk = new Provider('http://localhost:8545');
+var sdk = new Provider('https://node.ambisafe.co');
 
 sdk.getThing('pbk:ec:secp256r1:03267b55460f97c2b5db61296b89fb976be632170900ca4f063fda13be5deb334c').then(function(thing) {
     console.log(thing);
 });
 
-sdk.getRegistrant('0x4a282993420bd9770b410b9b0324f2b8bf5964ab').then(function(registrant) {
+sdk.getRegistrant('0xdc3a9db694bcdd55ebae4a89b22ac6d12b3f0c24').then(function(registrant) {
     console.log(registrant);
 }).catch(console.log); // Way to get errors from operation.
 
@@ -74,7 +74,7 @@ var Provider = require('open-registry-sdk');
 
 // Registrant's private key or mnemonic
 var secret = '651fd614a325efb4a68a8f2c3368ee25f46043596dbbb329d1bb4cfcfe1ff265';
-var rpcUrl = 'http://localhost:8545';
+var rpcUrl = 'http://node.ambisafe.co';
 
 var sdk = new Provider(rpcUrl, 'registrant', secret);
 
@@ -145,7 +145,7 @@ Whitelisting, Thing metadata schema functionality.
 var Provider = require('open-registry-sdk');
 
 var secret = '<private key>';
-var rpcUrl = 'http://localhost:8545';
+var rpcUrl = 'http://node.ambisafe.co';
 
 var sdk = new Provider(rpcUrl, 'registrar', secret);
 
