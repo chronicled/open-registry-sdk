@@ -41,7 +41,7 @@ Note: When instantiating SDK, role name is provided, each higher-level role auto
 Can fetch Things and Registrants from smart contracts and verify Thing's signature.
 ```js
 var Provider = require('open-registry-sdk');
-var sdk = new Provider('https://node.ambisafe.co');
+var sdk = new Provider('http://node.ambisafe.co');
 
 sdk.getThing('pbk:ec:secp256r1:03267b55460f97c2b5db61296b89fb976be632170900ca4f063fda13be5deb334c').then(function(thing) {
     console.log(thing);
