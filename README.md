@@ -12,21 +12,17 @@ Entities of the Open Registry for IoT:
   Contains identities of the Thing (public key, wireless device id, hashed serial number) and it's metadata (name, description, service url... fully customizable data set);
 - Metadata schema — is a Protocol Buffers schema describing which data fields which can go into Thing's metadata.
   Currently Registrar is managing those schemas, but any Registrant will be allowed to that in next release iteration.
-- Registrar — is a whitelisting organization, have rights to add new Registrants. Basically it's needed just to verify that Registrant's details are correct.
-  We're still figuring out best possible solution and in next iterations it may end up as:
-  - decentralized autonomous whitelisting organization;
-  - anyone can register without permission, and certifiers will be introduced to validate Registrants.
-    And it will be a matter of trust from community to accept "approvals" from those certifiers.
+- Registrar — is an organization that helps with onboarding of new Registrants (including confirmation of Registrant identities). We support only one Registrar in this release and we are working to support multiple Registrars in future releases.
 
 Please find information on smart contracts and Thing's identity format in the repo [TODO: include ethereum repo link]
 
 
 There's 3 basic user-roles, and functionality is wrapped around them:
-- Consumer — readonly access: fetch Things and Registrants, verify ECC and RSA signature of a hardware Thing.
-- Registrant — add new Things to the Registry, add new identities to a Thing, update metadata, set Thing as invalid / disabled (can be useful if Thing is hacked, or manufacturer recalled product after publishing it in Open Registry).
-- Registrar — add / whitelist Registrants, update it's data on request, set as disabled on request or if Registrant is compromised.
+- Consumer — read-only access: fetch Things and Registrants, verify ECC and RSA signature of a hardware Thing.
+- Registrant — add new Things to the Registry, add new identities to a Thing, update metadata, set Thing as invalid / disabled (can be useful if manufacturer recalls product after publishing it in Open Registry).
+- Registrar — onboard, update, and disable Registrants.
 
-Note: When instantiating SDK, role name is provided, each higher-level role automatically inherits functionality from it's lower-level siblings.
+Note: When instantiating SDK, role name is provided, each higher-level role automatically inherits functionality from its lower-level siblings.
 
 
 ## SDK Usage by Example
@@ -95,9 +91,12 @@ var thing = {
   }
 }
 
+// Note: if you encountered out of gas error, just add some free testnet ether to this address: 0x72e09c67f37524488089ad46b176eede3cb877b3
+// google testnet wei faucet
 sdk.createThing(thing, 1).then(function(txHash) {
   // Ethereum transaction hash. Can be used to lookup status of the transaction and its details.
   // use sdk.getTransactionResult(txHash).then(...)
+  // Alternatively check status of your transaction on https://testnet.etherscan.io/
   console.log(txHash);
 });
 
