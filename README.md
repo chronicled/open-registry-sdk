@@ -31,27 +31,33 @@ Note: When instantiating SDK, role name is provided, each higher-level role auto
 
 ## SDK Usage by Example
 
+Examples provided for testnet, since we're publishing private keys of Community Registrant, so anyone can try it out right away.
+SDK itself is configured to work on mainnet by default, though in order to add Things you would need to be added as Registrant.
+Which you can request here http://chronicled.org/connect.html
+
 ### Prerequisites
 
-- Ethereum node up and running on mainnet, accepting RPC requests through http protocol. Find how to this in official instructions: https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum.
-- Open Registry for IoT is installed: `npm install open-registry-sdk`
+- Ethereum node up and running on testnet, accepting RPC requests through http protocol. Find how to do it in official instructions: https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum. Run `geth` with `--testnet` param.
+- Open Registry for IoT SDK is installed: `npm install open-registry-sdk`
 
 ### Consumer
 
 Can fetch Things and Registrants from smart contracts and verify Thing's signature.
 ```js
 var Provider = require('open-registry-sdk');
-var sdk = new Provider('http://node.ambisafe.co');
+var contracts = {registrarAddress: '0xd76bc6a9eac205734b6fa2f72383db8f0ddecf64', registryAddress: '0x885ef67217954b7fd5d9cd7e79f3aba1599cffe0'};
+var sdk = new Provider('http://localhost:8545', 'consumer', null, contracts);
 
 sdk.getThing('ble:1.0:00112233').then(function(thing) {
     console.log(thing);
 });
 
-sdk.getRegistrant('0xdc3a9db694bcdd55ebae4a89b22ac6d12b3f0c24').then(function(registrant) {
+sdk.getRegistrant('0x8de0dcbdb81e09c4a0a6625ee145c3997c0a2cac').then(function(registrant) {
     console.log(registrant);
 }).catch(console.log); // Way to get errors from operation.
 
 
+// ECC public key, stored in Open Registry
 var identity = 'pbk:ec:secp256r1:0360fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29fb6';
 var message = 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf';
 // Message signed by Thing
@@ -72,15 +78,16 @@ Note: when creating Thing unique identities have to be used.
 ```js
 var Provider = require('open-registry-sdk');
 
-// Registrant's private key or mnemonic
-var secret = '651fd614a325efb4a68a8f2c3368ee25f46043596dbbb329d1bb4cfcfe1ff265';
-var rpcUrl = 'http://node.ambisafe.co';
+// Registrant's private key or mnemonic. This is private key of Community Registrant
+var privateKey = '590929699c129de953629deb3cff4bd166754dd7dada444d8e15941cbce31eab';
 
-var sdk = new Provider(rpcUrl, 'registrant', secret);
+var contracts = {registrarAddress: '0xd76bc6a9eac205734b6fa2f72383db8f0ddecf64', registryAddress: '0x885ef67217954b7fd5d9cd7e79f3aba1599cffe0'};
+var sdk = new Provider('http://localhost:8545', 'registrant', privateKey, contracts);
 
 // Creating Thing
 var thing = {
-  identities: ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f01", "ble:1.0:0011223344"],
+  // Change identities each time you create a Thing. Identity must always be unique.
+  identities: ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f52", "ble:1.0:0011223345"],
   data: {
     name: 'Demo Thing',
     description: 'This is demo product',
@@ -89,19 +96,20 @@ var thing = {
 }
 
 sdk.createThing(thing, 1).then(function(txHash) {
-  // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
+  // Ethereum transaction hash. Can be used to lookup status of the transaction and its details.
+  // use sdk.getTransactionResult(txHash).then(...)
   console.log(txHash);
 });
 
 
 // Fetching Thing from registry. After transaction is committed.
-sdk.getThing("ble:1.0:0011223344").then(function(thing) {
+sdk.getThing("ble:1.0:0011223345").then(function(thing) {
     console.log(thing);
 });
 
 
 // Alternatively. Both identities are searchable.
-sdk.getThing('pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f01').then(function(thing) {
+sdk.getThing('pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f52').then(function(thing) {
     console.log(thing);
 });
 
@@ -113,14 +121,14 @@ var data = {
   service_url: 'chronicled.org/demo.json'
 };
 
-sdk.updateThingData("ble:1.0:0011223344", data).then(function(txHash) {
+sdk.updateThingData("ble:1.0:0011223345", data).then(function(txHash) {
   // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
   console.log(txHash);
 });
 
 
 // Add identity
-sdk.addIdentities("ble:1.0:0011223344", ["sn:12345678"]).then(function(txHash) {
+sdk.addIdentities("ble:1.0:0011223345", ["sn:12345678"]).then(function(txHash) {
   // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
   console.log(txHash);
 });
@@ -128,7 +136,7 @@ sdk.addIdentities("ble:1.0:0011223344", ["sn:12345678"]).then(function(txHash) {
 
 // Set Thing valid / invalid. Available when executing sdk.getThing() as one of parameters of returned object.
 var valid = false;
-sdk.setThingValid("ble:1.0:0011223344", valid).then(function(txHash) {
+sdk.setThingValid("ble:1.0:0011223345", valid).then(function(txHash) {
   // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
   console.log(txHash);
 });
@@ -145,7 +153,7 @@ Whitelisting, Thing metadata schema functionality.
 var Provider = require('open-registry-sdk');
 
 var secret = '<private key>';
-var rpcUrl = 'http://node.ambisafe.co';
+var rpcUrl = 'http://localhost:8545';
 
 var sdk = new Provider(rpcUrl, 'registrar', secret);
 
