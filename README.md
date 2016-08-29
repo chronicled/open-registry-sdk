@@ -68,7 +68,6 @@ consumer.verifyIdentity(identity, message, signature);
 
 Can create and manage Things.
 
-[TODO: publish private key of the community Registrant]
 Note: when creating Thing unique identities have to be used.
 
 ```js
