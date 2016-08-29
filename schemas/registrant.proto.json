@@ -19,26 +19,20 @@
                 {
                     "rule": "required",
                     "type": "string",
-                    "name": "contact",
+                    "name": "website",
                     "id": 3
                 },
                 {
                     "rule": "required",
                     "type": "string",
-                    "name": "website",
-                    "id": 4
-                },
-                {
-                    "rule": "required",
-                    "type": "string",
                     "name": "legalName",
-                    "id": 5
+                    "id": 4
                 },
                 {
                     "rule": "required",
                     "type": "Address",
                     "name": "legalAddress",
-                    "id": 6
+                    "id": 5
                 }
             ],
             "messages": [
