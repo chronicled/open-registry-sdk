@@ -28,7 +28,6 @@
     "bytebuffer": "5.0.1",
     "chai": "3.5.0",
     "eth-lightwallet": "2.4.3",
-    "jshint": "2.9.3",
     "json-parser": "1.1.5",
     "object-assign": "4.1.0",
     "open-registry-utils": "*",
@@ -46,5 +45,21 @@
     "sinon-chai": "2.8.0",
     "webpack": "1.13.1",
     "webpack-node-externals": "1.3.3"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 5,
+      "sourceType": "module"
+    },
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "rules": {
+      "semi": ["error", "always"],
+      "eol-last": 2
+    }
   }
 }
