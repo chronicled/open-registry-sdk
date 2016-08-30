@@ -31,7 +31,7 @@
     "jshint": "2.9.3",
     "json-parser": "1.1.5",
     "object-assign": "4.1.0",
-    "open-registry-utils": "*",
+    "open-registry-utils": "0.0.5",
     "protobufjs": "5.0.1",
     "source-map-support": "0.4.2",
     "web3": "0.17.0-alpha",
