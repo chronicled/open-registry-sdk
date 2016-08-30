@@ -59,7 +59,8 @@
     ],
     "rules": {
       "semi": ["error", "always"],
-      "eol-last": 2
+      "eol-last": 2,
+      "no-console": 0
     }
   }
 }
