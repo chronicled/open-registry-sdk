@@ -59,7 +59,7 @@ var message = 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf'
 // Message signed by Thing
 var signature = '3046022100efd48b2aacb6a8fd1140dd9cd45e81d69d2c877b56aaf991c34d0ea84eaf3716022100f7cb1c942d657c41d436c7a1b6e29f65f3e900dbb9aff4064dc4ab2f843acda8';
 // Returns true if signature is correct
-consumer.verifyIdentity(identity, message, signature);
+sdk.verifyIdentity(identity, message, signature);
 
 ```
 
