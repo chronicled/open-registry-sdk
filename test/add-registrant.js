@@ -16,11 +16,9 @@ var expect = require('chai').expect;
 var Registrant = require('../lib/registrant');
 var Registrar = require('../lib/registrar');
 var Consumer = require('../lib/consumer');
-var ProtoBuf = require("protobufjs");
 var sinon = require('sinon');
 var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
-var proto = require('../schemas/schema.proto.json');
 var Provider = require('../lib/provider');
 var provider = new Provider();
 

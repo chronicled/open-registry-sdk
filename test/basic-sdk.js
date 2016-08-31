@@ -24,17 +24,10 @@ var ByteBuffer = require('bytebuffer');
 var Provider = require('../build/open-registry-sdk.js');
 var sinon = require('sinon');
 
-
-builder = ProtoBuf.loadJson(require('../schemas/schema.proto.json'));
-var Schema = builder.build("Schema").Schema;
-
-
-
-
 var provider = null;
 
 var registrantToAddAddress = '0x1234';
-var schemaToGet = 1;
+var schemaToGet = 0;
 var registrantToAdd = {
 	name: 'Test Registrant',
 	description: 'Test description of the registrant',
@@ -99,8 +92,8 @@ var registry = {
                     '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ],
                   [ '0x0a0a54657374207468696e67121d54657374206465736372697074696f6e206f',
                     '0x6620746865207468696e67000000000000000000000000000000000000000000' ],
-                  1,
-                  '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d',
+                  schemaToGet,
+                  schemaToAdd.definition,
                   '0x300221400d539cb5d15940c56239e6353287eba2',
                   true
                 ]
@@ -114,15 +107,23 @@ var registry = {
     }
   },
 
-  createSchema: function(schema){
-    assert.equal(schema, '0x0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d');
+  createSchema: function(name, description, definition){
+    assert.equal(name, schemaToAdd.name);
+    assert.equal(description, schemaToAdd.description);
+    assert.equal(definition, schemaToAdd.definition);
     invokeCallback(arguments, [ null, '0x52350d231f54851cf066d5b6482fe041edd63909da48c08ffa93645f44ff76bf' ]);
   },
 
   schemas: {
     call: function(schemaIndex) {
       assert.equal(schemaIndex, schemaToGet);
-      invokeCallback(arguments, [null, '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d'])
+      invokeCallback(arguments, [null, [schemaToAdd.name, schemaToAdd.description, schemaToAdd.definition]])
+    }
+  },
+
+  standardSchema: {
+    call: function() {
+      invokeCallback(arguments, [null, ['', '', '']])
     }
   },
 
@@ -132,7 +133,7 @@ var registry = {
         '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ],
       [ '0x0a0a54657374207468696e67121d54657374206465736372697074696f6e206f',
         '0x6620746865207468696e67' ]
-      , 1]);
+      , schemaToGet]);
 
       invokeCallback(arguments, [ null, '0xcc8ea35f1b8e727f935acb7411aa4c7bd1e31d534a5fab15299d502e9ff8aa2e' ]);
   },
@@ -149,7 +150,7 @@ var registry = {
         '0x0a16687474703a2f2f6368726f6e69636c65642e636f6d2f120d54657374696e',
         '0x6720616761696e' ],
       [ 1, 2 ],
-      1
+      schemaToGet
     ]);
 
       invokeCallback(arguments, [ null, '0xa967a1338a93b79830874d6fa064eed38ee3705d7e6ae25f643a68eddf15d4b5' ]);
@@ -209,14 +210,14 @@ describe('Open Registry SDK', function() {
   });
 
   it('Add Thing', function(done) {
-    sdk.createThing(thingToAdd, 1).then(function(tx){
+    sdk.createThing(thingToAdd, schemaToGet).then(function(tx){
       done();
     });
   });
 
  it('Add Things (PLURAL)', function(done) {
 
-  sdk.createThings(things, 1)
+  sdk.createThings(things, schemaToGet)
   .then(function(tx){
     assert.notEqual(tx, null);
     done();
@@ -234,7 +235,7 @@ describe('Open Registry SDK', function() {
   });
 
  it('Create Schema', function(done) {
-    sdk.createSchema(schemaToAdd).then(function(tx){
+    sdk.createSchema(schemaToAdd, thingToAdd.data).then(function(tx){
       done();
     }).catch(console.log);
  });
