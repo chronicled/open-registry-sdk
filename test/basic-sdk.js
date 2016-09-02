@@ -72,6 +72,14 @@ var thingToAdd = {
   }
 };
 
+var brokenThingToAdd = {
+  identities: ['broken'],
+  data: {
+    name: 'Test thing',
+    description: 'Test description of the thing'
+  }
+};
+
 var sdk = null;
 
 
@@ -210,6 +218,12 @@ describe('Open Registry SDK', function() {
 
   it('Add Thing', function(done) {
     sdk.createThing(thingToAdd, 1).then(function(tx){
+      done();
+    });
+  });
+
+  it('Add Thing with broken identity', function(done) {
+    sdk.createThing(brokenThingToAdd, 1).then(assert.fail).catch(function() {
       done();
     });
   });
