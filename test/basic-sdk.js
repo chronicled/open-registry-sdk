@@ -73,7 +73,7 @@ var thingToAdd = {
 };
 
 var brokenThingToAdd = {
-  identities: ['broken'],
+  identities: ['pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f0'],
   data: {
     name: 'Test thing',
     description: 'Test description of the thing'
