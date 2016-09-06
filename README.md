@@ -154,7 +154,7 @@ var testThingData = {
   description: 'This is demo product, which looks better',
   service_url: 'chronicled.org/demo.json',
   data: {
-    custome_field: 'version 1.0'
+    custom_field: 'version 1.0'
   }
 };
 
