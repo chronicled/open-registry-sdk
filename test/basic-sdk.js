@@ -95,31 +95,27 @@ var registry = {
     assert.equal(arguments[0], registrar.address);
     invokeCallback(arguments, [null, '0x292726591aee1f1a36daee6a9e2726751e8c22222bc0db663812998cf5142899' ]);
   },
-  getThing: {
-    call: function() {
-      // Verifying is input correct
-      assert.deepEqual(arguments[0], [ '0x1070626b3a65633a73656370323536723100210360fed4ba255a9d31c961eb74', '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ]);
+  getThing: function() {
+    // Verifying is input correct
+    assert.deepEqual(arguments[0], [ '0x1070626b3a65633a73656370323536723100210360fed4ba255a9d31c961eb74', '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ]);
 
-      invokeCallback(arguments,
-              [null,
-                [
-                  [ '0x1070626b3a65633a73656370323536723100210360fed4ba255a9d31c961eb74',
-                    '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ],
-                  [ '0x0a0a54657374207468696e67121d54657374206465736372697074696f6e206f',
-                    '0x6620746865207468696e67000000000000000000000000000000000000000000' ],
-                  1,
-                  '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d',
-                  '0x300221400d539cb5d15940c56239e6353287eba2',
-                  true
-                ]
-              ]);
-    }
+    invokeCallback(arguments,
+            [null,
+              [
+                [ '0x1070626b3a65633a73656370323536723100210360fed4ba255a9d31c961eb74',
+                  '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ],
+                [ '0x0a0a54657374207468696e67121d54657374206465736372697074696f6e206f',
+                  '0x6620746865207468696e67000000000000000000000000000000000000000000' ],
+                1,
+                '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d',
+                '0x300221400d539cb5d15940c56239e6353287eba2',
+                true
+              ]
+            ]);
   },
 
-  registrarAddress: {
-    call: function() {
-      invokeCallback(arguments, [null, '0x15034797709cc5f0a07f5e878ec3e87b3f05e316']);
-    }
+  registrarAddress: function() {
+    invokeCallback(arguments, [null, '0x15034797709cc5f0a07f5e878ec3e87b3f05e316']);
   },
 
   createSchema: function(schema){
@@ -127,11 +123,9 @@ var registry = {
     invokeCallback(arguments, [ null, '0x52350d231f54851cf066d5b6482fe041edd63909da48c08ffa93645f44ff76bf' ]);
   },
 
-  schemas: {
-    call: function(schemaIndex) {
-      assert.equal(schemaIndex, schemaToGet);
-      invokeCallback(arguments, [null, '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d'])
-    }
+  schemas: function(schemaIndex) {
+    assert.equal(schemaIndex, schemaToGet);
+    invokeCallback(arguments, [null, '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d'])
   },
 
   createThing: function() {
@@ -172,15 +166,11 @@ var registrar = {
 
 
 describe('Open Registry SDK', function() {
-	it('Start Registrar SDK', function(done) {
-
-
-    // console.log(Provider.prototype.getRegistry)
-    sinon.stub(Provider.prototype, 'getRegistry').returns(registry);
-    sinon.stub(Provider.prototype, 'getRegistrar').returns(registrar);
-
+	before('Start Registrar SDK', function() {
 		sdk = new Provider('', 'registrar');
-		done();
+    Object.keys(registry).forEach(function(key) {
+      sinon.stub(sdk.registry, key, registry[key]);
+    });
 	});
 
 
