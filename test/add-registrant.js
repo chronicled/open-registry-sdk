@@ -22,62 +22,55 @@ var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
 var proto = require('../schemas/schema.proto.json');
 var Provider = require('../lib/provider');
-var provider = new Provider();
-
+var provider;
 
 
 var thingToAdd = {
-  identities: [ {
-    pubKey: ByteBuffer.fromHex('10238a3b4610238a3b3610238a3b3610238a3b4610238a3b46'),
-    schema: 'urn:test'
-  } ],
+  identities: ['pbk:ec:secp256r1:0360fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f04'],
   data: {
-    service_url: 'http://www.cosign.io'
+    name: 'Test thing',
+    description: 'Test description of the thing'
   }
 };
 
-
-var thingResponse = [ [ '0x0875726e3a746573740002102300000000000000000000000000000000000000' ],
-  [ '0x0a14687474703a2f2f7777772e636f7369676e2e696f' ],
-  '0x0000000000000000000000000000000000000000000000000000000000000001',
-  'message Thing {required string service_url = 1;}',
-  '0x202c31ca637d459bcd51a7bf77cc2c5a1c8489d1',
-  true ];
+var thingResponse = [
+  [ '0x1070626b3a65633a73656370323536723100210360fed4ba255a9d31c961eb74',
+    '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ],
+  [ '0x0a0a54657374207468696e67121d54657374206465736372697074696f6e206f',
+    '0x6620746865207468696e67' ],
+  1,
+  '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d',
+  '0x300221400d539cb5d15940c56239e6353287eba2',
+  true
+];
 
 // get schemaHex like this:
 // > var schema = new Schema({name:"basic",description:"desc",definition:"message Thing {required string service_url = 1;}"});
 // > schema.encodeHex();
-var schemaHex = '0a0562617369631204646573631a306d657373616765205468696e67207b726571756972656420737472696e6720736572766963655f75726c203d20313b7d';
+var schemaHex = '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d';
+var stub;
 
 describe('Registrant SDK', function() {
 
-   afterEach(function () {
-      provider.getRegistry.restore();
+   beforeEach(function () {
+      provider = new Provider('', 'registrar');
    });
 
   it('should allow to read Thing and parse into object.', function(done) {
+    sinon.stub(provider.registry, 'getThing').yields(null, thingResponse);
 
-    var contract = { 
-      getThing: { call: function() {} } 
-    };
-    sinon.stub(contract.getThing, 'call').yields(null, thingResponse);
-    sinon.stub(provider, 'getRegistry').returns(contract);
-
-    new Registrant(provider).getThing(['urn:test:1023']).then(function(rv) {
-      expect(rv.service_url).to.eql('http://www.cosign.io');
+    provider.getThing(thingToAdd.identities[0]).then(function(rv) {
+      expect(rv.data.name).to.eql(thingToAdd.data.name);
       done();
     }).catch(done);
   });
 
   it('should allow to create Thing that is correctly serialized.', function(done) {
+    sinon.stub(provider.registry, 'createThing').yields(null, '0x4321');
+    sinon.stub(provider.registry, 'schemas').yields(null, schemaHex);
 
-    var contract = { createThing: function() {} , schemas: { call: function() {} }};
-    sinon.stub(contract, 'createThing').yields(null, '0x4321');
-    sinon.stub(contract.schemas, 'call').yields(null, schemaHex);
-    sinon.stub(provider, 'getRegistry').returns(contract);
-
-    new Registrant(provider).createThing(['urn:test:1023'], thingToAdd.data).then(function(rv) {
-      expect(contract.createThing).calledWith(thingResponse[0], thingResponse[1], sinon.match.any, sinon.match.any);
+    provider.createThing(thingToAdd).then(function(rv) {
+      expect(provider.registry.createThing).calledWith(thingResponse[0], thingResponse[1], sinon.match.any, sinon.match.any);
       expect(rv).to.eql('0x4321');
       done();
     }).catch(done);
@@ -115,23 +108,16 @@ var registrantToAdd = {
   }
 }
 //created by creating protbuf from the object above and then calling '.encodeHex()'
-var regEncoded = '0a0f546573742052656769737472616e74122254657374206465736372697074696f6e206f66207468652072656769737472616e741a1374657374406368726f6e69636c65642e636f6d2216687474703a2f2f74657374776562736974652e636f6d2a115465737420436f6d70616e7920494e432e32420a0e526564207374726565742036363612001a0d53616e204672616e636973636f220a43616c69666f726e69612a0436363636320d556e6974656420537461746573';
+var regEncoded = '0x0a0f546573742052656769737472616e74122254657374206465736372697074696f6e206f66207468652072656769737472616e741a1374657374406368726f6e69636c65642e636f6d2216687474703a2f2f74657374776562736974652e636f6d2a115465737420436f6d70616e7920494e432e32420a0e526564207374726565742036363612001a0d53616e204672616e636973636f220a43616c69666f726e69612a0436363636320d556e6974656420537461746573';
 
 describe('Certifier SDK', function() {
 
   it('should allow to add registrant.', function(done) {
 
-    var contract = { add: function() {} , schemas: { call: function() {} }};
-    sinon.stub(contract, 'add').yields(null, 'txhash');
+    sinon.stub(provider.registrar, 'add').yields(null, 'txhash');
 
-    var registrar = new Registrar({
-      getRegistrar: function() {return contract;},
-      getWeb3: function() {},
-      getAddress: function() {}
-    });
-
-    registrar.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx) {
-      expect(contract.add).calledWith(registrantToAddAddress, regEncoded, sinon.match.any, sinon.match.any);
+    provider.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx) {
+      expect(provider.registrar.add).calledWith(registrantToAddAddress, regEncoded, sinon.match.any, sinon.match.any);
       done();
     }).catch(done);
   });
