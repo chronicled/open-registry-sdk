@@ -92,7 +92,7 @@ var thing = {
 
 // Note: if you encountered out of gas error, just add some free testnet ether to this address: 0x72e09c67f37524488089ad46b176eede3cb877b3
 // google testnet wei faucet
-sdk.createThing(thing, 1).then(function(txHash) {
+sdk.createThing(thing).then(function(txHash) {
   // Ethereum transaction hash. Can be used to lookup status of the transaction and its details.
   // use sdk.getTransactionResult(txHash).then(...)
   // Alternatively check status of your transaction on https://testnet.etherscan.io/
@@ -135,6 +135,30 @@ sdk.addIdentities("ble:1.0:0011223345", ["sn:12345678"]).then(function(txHash) {
 // Set Thing valid / invalid. Available when executing sdk.getThing() as one of parameters of returned object.
 var valid = false;
 sdk.setThingValid("ble:1.0:0011223345", valid).then(function(txHash) {
+  // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
+  console.log(txHash);
+});
+
+// Add Thing metadata standard schema
+var metadataSchema = 'message Thing { optional string name = 1; optional string description = 2; optional string service_url = 3; optional Data data = 4; }';
+
+var schemaContainer = {
+  name: 'Custom.v1',
+  description: 'Schema with additional custom field',
+  definition: metadataSchema
+};
+
+// To be validated against schema before sending transaction
+var testThingData = {
+  name: 'Demo Thing, New label same quality',
+  description: 'This is demo product, which looks better',
+  service_url: 'chronicled.org/demo.json',
+  data: {
+    custom_field: 'version 1.0'
+  }
+};
+
+sdk.createStandardSchema(schemaContainer).then(function(txHash) {
   // Ethereum transaction hash. Can be used to lookup status of the transaction and it's details.
   console.log(txHash);
 });
@@ -207,25 +231,34 @@ sdk.createSchema(schemaContainer).then(function(txHash) {
 
 ### Thing Metadata Format
 
-Due to the limitation, that public functions can not receive arrays of dynamicly-sized types, data in the storage of the contract has been sliced into `byte32` records. The content of the arrays is encoded tightly using the a protobuf schema. The schema is stored in the contract, and each Thing record contains a reference to a schema. A schema can look like this:
+Due to the limitation, that public functions can not receive arrays of dynamicly-sized types, data in the storage of the contract has been sliced into `bytes32` records. The content of the arrays is encoded tightly using the a protobuf schema. The schema is stored in the contract, and each Thing record contains a reference to a schema. A schema can look like this:
 
 ```
 message Thing {
   optional string name = 1;
   optional string description = 2;
   optional string service_url = 3;
+  optional Data data = 4;
 }
+
+message Data {}
 ```
 
 
-Schema itself is stored as a string in a Schema container's `definition` field:
+Schema itself is stored as a string in a registry's Schema struct `definition` field:
 
 ```
-message Schema {
-    required string name = 1;
-    required string description = 2;
-    required string definition = 3;
+struct Schema {
+    string name;
+    string description;
+    string definition;
 }
+
+// Latest standard schema.
+Schema public standardSchema;
+
+// Things schemas.
+Schema[] public schemas;
 ```
 
 ### Registrant Metadata Protocol Buffers Schema

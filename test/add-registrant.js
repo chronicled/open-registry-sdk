@@ -13,14 +13,8 @@
 // limitations under the License.
 
 var expect = require('chai').expect;
-var Registrant = require('../lib/registrant');
-var Registrar = require('../lib/registrar');
-var Consumer = require('../lib/consumer');
-var ProtoBuf = require("protobufjs");
 var sinon = require('sinon');
-var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
-var proto = require('../schemas/schema.proto.json');
 var Provider = require('../lib/provider');
 var provider;
 
@@ -33,22 +27,22 @@ var thingToAdd = {
   }
 };
 
+var schemaToAdd = {
+  name: 'Basic',
+  description: 'Schema with one or more identities and one name and description',
+  definition: 'message Thing { optional string name = 1; optional string description = 2; }'
+};
+
 var thingResponse = [
   [ '0x1070626b3a65633a73656370323536723100210360fed4ba255a9d31c961eb74',
     '0xc6356d68c049b8923b61fa6ce669622e60f29f04000000000000000000000000' ],
   [ '0x0a0a54657374207468696e67121d54657374206465736372697074696f6e206f',
     '0x6620746865207468696e67' ],
-  1,
-  '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d',
+  0,
+  schemaToAdd.definition,
   '0x300221400d539cb5d15940c56239e6353287eba2',
   true
 ];
-
-// get schemaHex like this:
-// > var schema = new Schema({name:"basic",description:"desc",definition:"message Thing {required string service_url = 1;}"});
-// > schema.encodeHex();
-var schemaHex = '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d';
-var stub;
 
 describe('Registrant SDK', function() {
 
@@ -67,7 +61,7 @@ describe('Registrant SDK', function() {
 
   it('should allow to create Thing that is correctly serialized.', function(done) {
     sinon.stub(provider.registry, 'createThing').yields(null, '0x4321');
-    sinon.stub(provider.registry, 'schemas').yields(null, schemaHex);
+    sinon.stub(provider.registry, 'schemas').yields(null, [schemaToAdd.name, schemaToAdd.description, schemaToAdd.definition]);
 
     provider.createThing(thingToAdd).then(function(rv) {
       expect(provider.registry.createThing).calledWith(thingResponse[0], thingResponse[1], sinon.match.any, sinon.match.any);
