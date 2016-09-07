@@ -233,13 +233,20 @@ describe('Open Registry SDK', function() {
       assert.deepEqual(thingToAdd.identities, thing.identities);
       done();
     })
-    .catch(console.log);
+    .catch(done);
   });
 
  it('Create Schema', function(done) {
-    sdk.createSchema(schemaToAdd, thingToAdd.data).then(function(tx){
+    sdk.createSchema(schemaToAdd).then(function(tx){
       done();
-    }).catch(console.log);
+    }).catch(done);
+ });
+
+ it('Check new schema', function(done) {
+    sdk.checkSchema(schemaToAdd.definition, thingToAdd.data).then(function(thing) {
+      assert.equal(JSON.stringify(thing), JSON.stringify(thingToAdd.data));
+      done();
+    }).catch(done);
  });
 
 
