@@ -24,6 +24,12 @@ There's 3 basic user-roles, and functionality is wrapped around them:
 
 Note: When instantiating SDK, role name is provided, each higher-level role automatically inherits functionality from its lower-level siblings.
 
+## Roadmap
+
+While fully functional, the SDK and Smart Contract are currently in beta. You're welcome to start registering your Things and provide feedback on the [forum](http://forum.chronicled.org).
+
+The team is also working with users and partners to gather feedback and additional requirements. The goal is to build consensus on the next project iterations and publish a roadmap that fulfills the needs of all participants of the ecosystem.
+
 
 ## SDK Usage by Example
 
