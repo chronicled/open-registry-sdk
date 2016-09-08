@@ -164,6 +164,17 @@ describe('Open Registry SDK', function() {
     Object.keys(registry).forEach(function(key) {
       sinon.stub(sdk.registry, key, registry[key]);
     });
+    sinon.stub(sdk.web3.eth, 'getTransactionReceipt', function() {
+      invokeCallback(arguments, [ null, {
+        logs: [
+          {
+            address: sdk.registryAddress,
+            topics: ['0xe887de22eef9e399f405f7821ce61fcbe181b8acba1709d9b1360af087485401'],
+            data: '0x0000000000000000000000000000000000000000000000000000000000000005'
+          }
+        ]
+      }]);
+    });
 	});
 
 
@@ -206,19 +217,12 @@ describe('Open Registry SDK', function() {
   });
 
   it('Add Thing with broken identity', function(done) {
-    sdk.createThing(brokenThingToAdd, schemaToGet).then(assert.fail).catch(function() {
-      done();
-    });
-  });
-
-  it('Add Thing with broken identity', function(done) {
-    sdk.createThing(brokenThingToAdd, schemaToGet).then(assert.fail).catch(function() {
+    sdk.createThing(brokenThingToAdd, schemaToGet).then(done).catch(function() {
       done();
     });
   });
 
  it('Add Things (PLURAL)', function(done) {
-
   sdk.createThings(things, schemaToGet)
   .then(function(tx){
     assert.notEqual(tx, null);
@@ -245,6 +249,14 @@ describe('Open Registry SDK', function() {
  it('Check new schema', function(done) {
     sdk.checkSchema(schemaToAdd.definition, thingToAdd.data).then(function(thing) {
       assert.equal(JSON.stringify(thing), JSON.stringify(thingToAdd.data));
+      done();
+    }).catch(done);
+ });
+
+ it('Check transaction result', function(done) {
+    sdk.getTransactionResult('0x123').then(done).catch(function(result){
+      assert.equal(result.length, 1);
+      assert.equal(result[0], 'Incorrect input, at least one identity is required.');
       done();
     }).catch(done);
  });
