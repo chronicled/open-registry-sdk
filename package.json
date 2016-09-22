@@ -34,7 +34,7 @@
     "protobufjs": "5.0.1",
     "source-map-support": "0.4.2",
     "web3": "0.17.0-alpha",
-    "web3-provider-engine": "7.7.0"
+    "web3-provider-engine": "Ambisafe/provider-engine.git#forgive-undef-strings"
   },
   "devDependencies": {
     "chai": "3.5.0",
