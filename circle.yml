@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 5.5.0
+    version: 6.1.0
 
 # CircleCI bundles node 5.5.0 w/ npm 2.13.5, whereas node itself advertises
 # that 5.5.0 works w/ npm 3.3.12
