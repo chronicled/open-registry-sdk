@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 5.5.0
+    version: 6.5.0
 
 # CircleCI bundles node 5.5.0 w/ npm 2.13.5, whereas node itself advertises
 # that 5.5.0 works w/ npm 3.3.12
@@ -9,7 +9,7 @@ machine:
 dependencies:
   pre:
     - rm -rf node_modules
-    - npm install -g npm-cli-login@0.0.10 npm@3.3.12
+    - npm install -g npm-cli-login@0.0.10 npm@3.10.3
     - NPM_USER=$NPM_USERNAME NPM_PASS=$NPM_PASSWORD npm-cli-login
 
 test:
