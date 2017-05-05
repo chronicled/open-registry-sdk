@@ -32,7 +32,7 @@
     "eth-lightwallet": "2.5.4",
     "json-parser": "1.1.5",
     "object-assign": "4.1.0",
-    "open-registry-utils": "0.0.7",
+    "open-registry-utils": "0.0.10",
     "protobufjs": "5.0.1",
     "source-map-support": "0.4.2",
     "web3": "0.17.0-alpha",
