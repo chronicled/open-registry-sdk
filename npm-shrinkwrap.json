@@ -2280,9 +2280,9 @@
       "resolved": "https://registry.npmjs.org/onetime/-/onetime-1.1.0.tgz"
     },
     "open-registry-utils": {
-      "version": "0.0.7",
-      "from": "open-registry-utils@0.0.7",
-      "resolved": "https://registry.npmjs.org/open-registry-utils/-/open-registry-utils-0.0.7.tgz"
+      "version": "0.0.13",
+      "from": "open-registry-utils@0.0.13",
+      "resolved": "https://registry.npmjs.org/open-registry-utils/-/open-registry-utils-0.0.13.tgz"
     },
     "optimist": {
       "version": "0.6.1",
