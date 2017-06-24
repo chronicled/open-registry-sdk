@@ -24,19 +24,20 @@
     "babel-plugin-transform-object-rest-spread": "6.23.0",
     "babel-plugin-transform-remove-strict-mode": "0.0.2",
     "babel-preset-es2015": "6.13.2",
+    "babel-preset-stage-0": "6.24.1",
     "bigi": "1.4.2",
     "bignumber.js": "2.3.0",
     "bluebird": "3.4.1",
     "bytebuffer": "5.0.1",
     "chai": "3.5.0",
-    "eth-lightwallet": "2.5.4",
+    "eth-lightwallet": "2.5.5",
     "json-parser": "1.1.5",
     "object-assign": "4.1.0",
     "open-registry-utils": "0.0.13",
     "protobufjs": "5.0.1",
     "source-map-support": "0.4.2",
-    "web3": "0.17.0-alpha",
-    "web3-provider-engine": "Ambisafe/provider-engine.git#forgive-undef-strings"
+    "web3": "0.19.1",
+    "web3-provider-engine": "13.0.3"
   },
   "devDependencies": {
     "chai": "3.5.0",
