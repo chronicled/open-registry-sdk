@@ -1,3 +1,4 @@
+/* eslint-env node, mocha */
 // Copyright 2016 Chronicled
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,45 +18,18 @@
 
 
 var assert = require("assert");
-var ProtoBuf = require("protobufjs");
-var OrUtils = require('open-registry-utils');
-var Web3 = require('web3');
-var ByteBuffer = require('bytebuffer');
-var Provider = require('../build/open-registry-sdk.js');
+var Provider = require('../index.js');
 var sinon = require('sinon');
 
 
-builder = ProtoBuf.loadJson(require('../schemas/schema.proto.json'));
-var Schema = builder.build("Schema").Schema;
 
-
-
-
-var provider = null;
-
-var registrantToAddAddress = '0x1234';
 var schemaToGet = 1;
-var registrantToAdd = {
-	name: 'Test Registrant',
-	description: 'Test description of the registrant',
-	contact: 'test@chronicled.com',
-	website: 'http://testwebsite.com',
-	legalName: 'Test Company INC.',
-	address: {
-		street_1: 'Red street 666',
-		street_2: '',
-		city: 'San Francisco',
-		state: 'California',
-		zip: '6666',
-		country: 'United States'
-	}
-}
 
-var severalIds = ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f01", "ble:1.0:aabbccddee02", "pbk:ec:secp256r1:0222fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f03"]
+var severalIds = ["pbk:ec:secp256r1:0211fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f01", "ble:1.0:aabbccddee02", "pbk:ec:secp256r1:0222fed4ba255a9d31c961eb74c6356d68c049b8923b61fa6ce669622e60f29f03"];
 
 var things = [
   {identities: severalIds.slice(0, 2), data: {name: 'abc.com', description: 'Testing'}},
-  {identities: severalIds.slice(-1), data: {name: 'http://chronicled.com/', description: 'Testing again'}},
+  {identities: severalIds.slice(-1), data: {name: 'http://chronicled.com/', description: 'Testing again'}}
 ];
 
 var schemaToAdd = {
@@ -87,7 +61,7 @@ var sdk = null;
 var invokeCallback = function(args, params) {
   // console.log([].slice.apply(args).slice(-1)[0].toString());
   [].slice.apply(args).slice(-1)[0].apply(null, params);
-}
+};
 
 // Mock Registry
 var registry = {
@@ -156,13 +130,13 @@ var registry = {
     ]);
 
       invokeCallback(arguments, [ null, '0xa967a1338a93b79830874d6fa064eed38ee3705d7e6ae25f643a68eddf15d4b5' ]);
-  },
+  }
 
 
 };
 
 var registrar = {
-  address: '0x15034797709cc5f0a07f5e878ec3e87b3f05e316',
+  address: '0x15034797709cc5f0a07f5e878ec3e87b3f05e316'
 };
 
 
@@ -176,15 +150,15 @@ describe('Open Registry SDK', function() {
 
 
   it('Configure Registrar', function(done) {
-    sdk.setRegistrar(registrar.address).then(function(tx){
+    sdk.setRegistrar(registrar.address).then(function(){
       done();
     });
   });
 
-	it('Incorrect URN protocol', function(done, error) {
+	it('Incorrect URN protocol', function(done) {
 		var errors = 0;
     sdk.createThing({identities: ["ble:2.0:aabbccddee02"], data: {}})
-		.then(console.log).catch(function(error){
+		.then(console.log).catch(function(){
 			errors++;
 			return sdk.createThing({identities: ["ble:1.5:aabbccddee"], data: {}});
 		}).then(console.log).catch(function() {
@@ -208,7 +182,7 @@ describe('Open Registry SDK', function() {
   });
 
   it('Add Thing', function(done) {
-    sdk.createThing(thingToAdd, 1).then(function(tx){
+    sdk.createThing(thingToAdd, 1).then(function(){
       done();
     });
   });
@@ -239,11 +213,8 @@ describe('Open Registry SDK', function() {
   });
 
  it('Create Schema', function(done) {
-    sdk.createSchema(schemaToAdd).then(function(tx){
+    sdk.createSchema(schemaToAdd).then(function(){
       done();
     }).catch(console.log);
  });
-
-
-
 });

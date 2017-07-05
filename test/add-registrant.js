@@ -1,3 +1,4 @@
+/* eslint-env node, mocha */
 // Copyright 2016 Chronicled
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +14,8 @@
 // limitations under the License.
 
 var expect = require('chai').expect;
-var Registrant = require('../lib/registrant');
-var Registrar = require('../lib/registrar');
-var Consumer = require('../lib/consumer');
-var ProtoBuf = require("protobufjs");
 var sinon = require('sinon');
-var ByteBuffer = require('bytebuffer');
 require('chai').use(require('sinon-chai'));
-var proto = require('../schemas/schema.proto.json');
 var Provider = require('../lib/provider');
 var provider;
 
@@ -48,7 +43,6 @@ var thingResponse = [
 // > var schema = new Schema({name:"basic",description:"desc",definition:"message Thing {required string service_url = 1;}"});
 // > schema.encodeHex();
 var schemaHex = '0a054261736963123f536368656d612077697468206f6e65206f72206d6f7265206964656e74697469657320616e64206f6e65206e616d6520616e64206465736372697074696f6e1a4c6d657373616765205468696e67207b206f7074696f6e616c20737472696e67206e616d65203d20313b206f7074696f6e616c20737472696e67206465736372697074696f6e203d20323b207d';
-var stub;
 
 describe('Registrant SDK', function() {
 
@@ -106,7 +100,7 @@ var registrantToAdd = {
     zip: '6666',
     country: 'United States'
   }
-}
+};
 //created by creating protbuf from the object above and then calling '.encodeHex()'
 var regEncoded = '0x0a0f546573742052656769737472616e74122254657374206465736372697074696f6e206f66207468652072656769737472616e741a1374657374406368726f6e69636c65642e636f6d2216687474703a2f2f74657374776562736974652e636f6d2a115465737420436f6d70616e7920494e432e32420a0e526564207374726565742036363612001a0d53616e204672616e636973636f220a43616c69666f726e69612a0436363636320d556e6974656420537461746573';
 
@@ -116,7 +110,7 @@ describe('Certifier SDK', function() {
 
     sinon.stub(provider.registrar, 'add').yields(null, 'txhash');
 
-    provider.addRegistrant(registrantToAddAddress, registrantToAdd).then(function(tx) {
+    provider.addRegistrant(registrantToAddAddress, registrantToAdd).then(function() {
       expect(provider.registrar.add).calledWith(registrantToAddAddress, regEncoded, sinon.match.any, sinon.match.any);
       done();
     }).catch(done);
