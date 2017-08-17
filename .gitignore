@@ -35,6 +35,7 @@ server_modules
 
 environments
 
+.DS_Store
 node_modules
 playground
 build
