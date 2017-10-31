@@ -15,9 +15,6 @@
   ],
   "dependencies": {
     "async": "1.5.2",
-    "babel-cli": "6.11.4",
-    "babel-core": "6.13.2",
-    "babel-loader": "6.2.4",
     "bigi": "1.4.2",
     "bignumber.js": "2.3.0",
     "bluebird": "3.4.1",
@@ -38,8 +35,7 @@
     "json-loader": "0.5.4",
     "mocha": "2.5.3",
     "sinon": "1.17.4",
-    "sinon-chai": "2.8.0",
-    "webpack": "1.15.0"
+    "sinon-chai": "2.8.0"
   },
   "eslintConfig": {
     "parserOptions": {
