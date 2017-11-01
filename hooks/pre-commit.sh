@@ -6,7 +6,7 @@ npm run lint || { echo 'NPM lint failed, please resolve errors' >&2; exit 1; }
 npm run test || { echo 'NPM test failed, please resolve errors' >&2; exit 1; }
 
 function package_changes_staged {
-  ! git diff --cached --quiet -- package.json
+ ! git diff --cached --quiet -- package.json
 }
 function shrinkwrap_changes_notstaged {
   git diff --cached --quiet -- npm-shrinkwrap.json
