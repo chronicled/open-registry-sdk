@@ -7,7 +7,7 @@
     "test-bare-min": "mocha test/add-registrant.js -u tdd --timeout 0",
     "test": "mocha test/basic-sdk.js -u tdd --reporter spec",
     "lint": "./node_modules/.bin/eslint lib/*.js test/*.js",
-    "postinstall": "./hooks/setup.sh"
+    "setup-hooks": "./hooks/setup.sh"
   },
   "contributors": [
     "Chronicled Inc. (http://chronicled.com)",
