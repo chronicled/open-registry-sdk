@@ -16,11 +16,8 @@ function is_sdk_repo {
     false
   fi
 }
-function is_sdk_repo_with_missing_hooks {
-  is_sdk_repo && [ -f .git/hooks ] && [ ! -L .git/hooks/pre-commit ]
-}
 
-if is_sdk_repo_with_missing_hooks; then
-  echo "Setting up pre-commit hooks"
-  ln -si ../../hooks/pre-commit.sh .git/hooks/pre-commit
+if is_sdk_repo; then
+  echo "Setting up custom hook path"
+  git config core.hooksPath 'hooks/'
 fi
