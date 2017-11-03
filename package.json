@@ -6,7 +6,8 @@
   "scripts": {
     "test-bare-min": "mocha test/add-registrant.js -u tdd --timeout 0",
     "test": "mocha test/basic-sdk.js -u tdd --reporter spec",
-    "lint": "./node_modules/.bin/eslint lib/*.js test/*.js"
+    "lint": "./node_modules/.bin/eslint lib/*.js test/*.js",
+    "setup-hooks": "./hooks/setup.sh"
   },
   "contributors": [
     "Chronicled Inc. (http://chronicled.com)",
@@ -14,9 +15,6 @@
   ],
   "dependencies": {
     "async": "1.5.2",
-    "babel-cli": "6.11.4",
-    "babel-core": "6.13.2",
-    "babel-loader": "6.2.4",
     "bigi": "1.4.2",
     "bignumber.js": "2.3.0",
     "bluebird": "3.4.1",
