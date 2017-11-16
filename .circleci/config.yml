@@ -1,0 +1,58 @@
+version: 2
+jobs:
+
+  build:
+    working_directory: ~/open-registry-sdk
+    docker:
+      - image: circleci/node:6
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "npm-shrinkwrap.json" }}
+      - run: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "npm-shrinkwrap.json" }}
+          paths:
+            - node_modules
+
+  test:
+    working_directory: ~/open-registry-sdk
+    docker:
+      - image: circleci/node:6
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "npm-shrinkwrap.json" }}
+      - run: npm run lint
+      - run: npm run test
+
+  deployment:
+    working_directory: ~/open-registry-sdk
+    docker:
+      - image: circleci/node:6
+    steps:
+      - checkout
+      - run: sudo npm install -g npm-cli-login
+      - run: NPM_USER=$NPM_USERNAME NPM_PASS=$NPM_PASSWORD npm-cli-login
+      - run: npm --no-git-tag-version version `git describe --abbrev=0`
+      - run: npm --no-git-tag-version version patch
+      - run: git config --global user.email $GIT_EMAIL
+      - run: git config --global user.name $GIT_USERNAME
+      - run: git tag -a v`node .bin/version.js` -m v`node .bin/version.js`
+      - run: npm publish
+      - run: git push --tags
+
+workflows:
+  version: 2
+  open-registry-sdk-flow:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deployment:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
