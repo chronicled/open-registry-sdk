@@ -20,7 +20,7 @@
     "bluebird": "3.4.1",
     "bytebuffer": "5.0.1",
     "chai": "3.5.0",
-    "eth-lightwallet": "2.5.6",
+    "eth-lightwallet": "3.0.0",
     "json-parser": "1.1.5",
     "object-assign": "4.1.0",
     "open-registry-utils": "0.0.14",
@@ -33,7 +33,7 @@
     "chai": "3.5.0",
     "eslint": "2.13.1",
     "json-loader": "0.5.4",
-    "mocha": "2.5.3",
+    "mocha": "4.0.1",
     "sinon": "1.17.4",
     "sinon-chai": "2.8.0"
   },
