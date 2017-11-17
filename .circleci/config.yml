@@ -1,0 +1,60 @@
+defaults: &defaults
+  working_directory: ~/open-registry-sdk
+  docker:
+    - image: circleci/node:6
+
+version: 2
+jobs:
+
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+      - run: yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+      - run: npm run lint
+
+  deployment:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: sudo npm install -g npm-cli-login@0.0.10
+      - run: NPM_USER=$NPM_USERNAME NPM_PASS=$NPM_PASSWORD npm-cli-login
+      - run: npm --no-git-tag-version version `git describe --abbrev=0`
+      - run: npm --no-git-tag-version version patch
+      - run: git config --global user.email $GIT_EMAIL
+      - run: git config --global user.name $GIT_USERNAME
+      - run: git tag -a v`node .bin/version.js` -m v`node .bin/version.js`
+      - run: npm publish
+      - run: git push --tags
+
+workflows:
+  version: 2
+  mod_core_flow:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - hold:
+        type: approval
+        requires:
+            - test
+      - deployment:
+          requires:
+            - hold
+          filters:
+            branches:
+              only: master

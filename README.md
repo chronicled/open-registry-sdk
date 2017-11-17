@@ -1,5 +1,17 @@
 # Open Registry for IoT: SDK
+##### Table Of Contents
+* [Introduction](#introduction)
+* [Roadmap](#roadmap)
+* [Contributions](#contributions)
+* [SDK Usage](#sdk-usage)
+  * [Prerequisites](#prerequisites)
+  * [Consumer](#consumer)
+  * [Registrant](#registrant)
+  * [Registrar](#registrar)
+* [Metadata](#metadata)
+  * [Thing Metadata](#thing-metadata)
 
+<a name="introduction"></a>
 ## Introduction
 
 Presented SDK provides you with interfaces to all Open Registry smart contracts' APIs in Ethereum blockchain.
@@ -24,24 +36,34 @@ There's 3 basic user-roles, and functionality is wrapped around them:
 
 Note: When instantiating SDK, role name is provided, each higher-level role automatically inherits functionality from its lower-level siblings.
 
+<a name="roadmap"></a>
 ## Roadmap
 
 While fully functional, the SDK and Smart Contract are currently in beta. You're welcome to start registering your Things and provide feedback on the [forum](http://forum.chronicled.org).
 
 The team is also working with users and partners to gather feedback and additional requirements. The goal is to build consensus on the next project iterations and publish a roadmap that fulfills the needs of all participants of the ecosystem.
 
+<a name="contributions"></a>
+## Contributions
 
+Contributions are always welcome. A `yarn.lock` file has been checked into the Library to represent the current successful build that our developers are working with. Be sure that you have properly setup `yarn` within your environment by following the [Yarn Installation guide](https://yarnpkg.com/lang/en/docs/install/) and then run `yarn install` after you've forked and cloned the repo.
+
+When modifying dependencies, follow the [Yarn Usage guide](https://yarnpkg.com/en/docs/usage) in order to ensure that the lockfile is properly updated. Once you've finished modifying the code, simply submit a Pull Request and our team will review it once it's passed the unit tests.
+
+<a name="sdk-usage"></a>
 ## SDK Usage by Example
 
 Examples provided for testnet, since we're publishing private keys of Community Registrant, so anyone can try it out right away.
 SDK itself is configured to work on mainnet by default, though in order to add Things you would need to be added as Registrant.
 Which you can request here http://chronicled.org/connect.html
 
+<a name="prerequisites"></a>
 ### Prerequisites
 
 - Ethereum node up and running on testnet, accepting RPC requests through http protocol. Find how to do it in official instructions: https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum. Run `geth` with `--testnet` param.
 - Open Registry for IoT SDK is installed: `npm install open-registry-sdk`
 
+<a name="consumer"></a>
 ### Consumer
 
 Can fetch Things and Registrants from smart contracts and verify Thing's signature.
@@ -66,10 +88,10 @@ var message = 'af2bdbe1aa9b6ec1e2ade1d694f41fc71a831d0268e9891562113d8a62add1bf'
 var signature = '3046022100efd48b2aacb6a8fd1140dd9cd45e81d69d2c877b56aaf991c34d0ea84eaf3716022100f7cb1c942d657c41d436c7a1b6e29f65f3e900dbb9aff4064dc4ab2f843acda8';
 // Returns true if signature is correct
 sdk.verifyIdentity(identity, message, signature);
-
 ```
 
 
+<a name="registrant"></a>
 ### Registrant
 
 Can create and manage Things.
@@ -149,6 +171,7 @@ sdk.setThingValid("ble:1.0:0011223345", valid).then(function(txHash) {
 Also `createThings()` method is available to create multiple Things in one call, which allows to save on transaction cost.
 
 
+<a name="registrar"></a>
 ### Registrar
 
 Whitelisting, Thing metadata schema functionality.
@@ -209,8 +232,10 @@ sdk.createSchema(schemaContainer).then(function(txHash) {
 ```
 
 
+<a name="metadata"></a>
 ## Metadata
 
+<a name="thing-metadata"></a>
 ### Thing Metadata Format
 
 Due to the limitation, that public functions can not receive arrays of dynamicly-sized types, data in the storage of the contract has been sliced into `byte32` records. The content of the arrays is encoded tightly using the a protobuf schema. The schema is stored in the contract, and each Thing record contains a reference to a schema. A schema can look like this:
